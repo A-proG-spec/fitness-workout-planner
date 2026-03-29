@@ -1,0 +1,60 @@
+# ========================
+# Node
+# ========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# ========================
+# React / Vite
+# ========================
+dist/
+dist-ssr/
+build/
+.vite/
+*.local
+
+# ========================
+# Environment Variables
+# ========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+
+# ========================
+# MongoDB / Backend
+# ========================
+data/
+*.log
+logs/
+
+# ========================
+# Tailwind / PostCSS
+# ========================
+# (generated files are typically in dist, already covered above)
+
+# ========================
+# OS & Editor
+# ========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ========================
+# Misc
+# ========================
+coverage/
+.cache/
+*.tsbuildinfo
