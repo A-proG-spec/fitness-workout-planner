@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const PlanSchema = new mongoose.Schema({
     user: {
@@ -29,8 +29,7 @@ const PlanSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for efficient queries
 PlanSchema.index({ user: 1, scheduledDate: 1 });
 PlanSchema.index({ user: 1, completed: 1 });
 
-module.exports = mongoose.model('Plan', PlanSchema);
+export default mongoose.model('Plan', PlanSchema);
