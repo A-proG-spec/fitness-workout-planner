@@ -7,7 +7,7 @@ import {
     completeWorkout,
     deletePlan,
     updatePlan
-} from '../controllers/workoutController.js';
+} from '../controllers/planController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
