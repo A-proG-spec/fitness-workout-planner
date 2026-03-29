@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
 
-
+app.use('/api/workouts', workoutRoutes);
 
 // Root route
 app.get('/', (req, res) => {
