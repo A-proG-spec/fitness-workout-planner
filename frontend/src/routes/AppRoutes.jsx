@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import ProtectedRoute from '../components/ProtectedRoute';
 import Landing from '../pages/main/Landing';
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
@@ -18,15 +19,20 @@ export default function AppRoutes() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/onboarding/1" element={<Onboarding1 />} />
-      <Route path="/onboarding/2" element={<Onboarding2 />} />
-      <Route path="/onboarding/3" element={<Onboarding3 />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/workout-planner" element={<WorkoutPlanner />} />
-      <Route path="/progress" element={<Progress />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/exercises" element={<ExerciseLibrary />} />
-      <Route path="/exercise/:id" element={<ExerciseDetail />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/onboarding/1" element={<Onboarding1 />} />
+        <Route path="/onboarding/2" element={<Onboarding2 />} />
+        <Route path="/onboarding/3" element={<Onboarding3 />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/workout-planner" element={<WorkoutPlanner />} />
+        <Route path="/progress" element={<Progress />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/exercises" element={<ExerciseLibrary />} />
+        <Route path="/exercise/:id" element={<ExerciseDetail />} />
+      </Route>
+
+      <Route path="*" element={<Landing />} />
     </Routes>
   );
 }
