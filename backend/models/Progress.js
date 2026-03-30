@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const ProgressSchema = new mongoose.Schema({
     user: {
@@ -35,4 +35,4 @@ const ProgressSchema = new mongoose.Schema({
 // Ensure one entry per user per day
 ProgressSchema.index({ user: 1, date: 1 }, { unique: true });
 
-module.exports = mongoose.model('Progress', ProgressSchema);
+export default mongoose.model('Progress', ProgressSchema);
