@@ -35,6 +35,10 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         comment: 'Height in cm'
     },
+    weight: {
+        type: Number,
+        comment: 'Weight in kg'
+    },
     fitnessGoal: {
         type: String,
         enum: ['Weight Loss', 'Muscle Gain', 'Endurance', 'General Fitness'],
