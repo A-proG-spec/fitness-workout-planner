@@ -112,7 +112,7 @@ const SignupPage = () => {
                 disabled={isLoading}
                 className="flex-1 flex items-center justify-center gap-2 bg-[#f1f3f5] py-2.5 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-600 hover:bg-slate-200 transition-colors"
               >
-                <img src="/google_icon.jpg" className="w-3.5 h-3.5" alt="Google" />
+                <img src="/google_icon.jpg" className="w-6 h-6" alt="Google" />
                 Google
               </button>
             </div>
