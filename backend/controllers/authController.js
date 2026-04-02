@@ -1,6 +1,6 @@
 import User from '../models/User';
 import bcrypt from 'bcrypt';
-import crypto from ' crypto';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import{
     ACCESS_TOKEN_EXPIRE_DATE,
@@ -105,14 +105,109 @@ export const signUp=async(req,res,next)=>{
 export const logIn=async(req,res,next)=>{
     try{
          const {email,password}=req.body;
-         const emailExist=await User.findOne({email});
-         if(!emailExist){
+         if(!email||!password){
+            const error=new Error("Insert required information please");
+            error.statusCode=400;
+            throw error;
+         }
+         const user=await User.findOne({email});
+
+
+         if(!user){
             const error=new Error("User didn't exist");
             error.statusCode=400; 
              throw error
+         }
+
+         if(!user.isActive){
+             return res.status(401).json({
+                success:false,
+                
+             })
+         }
+        const isMatch=await bcrypt.compare(password,user.password);
+
+        if(!isMatch){
+            const error=new Error("Invalid Credintials");
+            error.statusCode=401;
+            throw error;
+        }
+        const access_token=jwt.sign(
+            {user_id:user._id},
+            ACCESS_TOKEN_PRIVATE_KEY,
+            {
+                algorithm:'RS256',
+                expiresIn:ACCESS_TOKEN_EXPIRE_DATE,
+            },    
+        );
+        const refresh_token=jwt.sign(
+            {user_id:user._id},
+            REFRESH_TOKEN_PRIVATE_KEY,
+            {algorithm:'RS256',
+                expiresIn:REFRESH_TOKEN_EXPIRE_DATE,
             }
+        );
+        res.cookie("access_token",access_token,{
+            maxAge:60000 * 15,
+            sameSite:'lax',
+            httpOnly:true,
+            secure:false,
+        });
+        res.cookie("refresh_token",refresh_token,{
+            maxAge:60000 * 60*24*7,
+            sameSite:'lax',
+            httpOnly:true,
+            secure:false,
+         });
+         let expireAt=new Date();
+         expireAt.setDate(expireAt.getDate()+7);
+
+         const hashed_refresh_token=crypto
+                  .createHash(sha256)
+                  .update(refresh_token)
+                  .digest("hex");
+        await refresh_token.create({
+            user_id:user._id,
+            refresh_token:hashed_refresh_token,
+            expireAt
+        })
+
+        const userloged=user.toObject();
+        delete userloged.password;
+        res.status(200).json({
+            success:true,
+        data:{
+            user:userloged,
+            refresh_token,
+            access_token
+         }
+            
+        })
+        
     }catch(err){
         next(err)
     }
-}
+};
 
+const logOut=async(req,res,next)=>{
+    try{
+       const user=await user.findOne({email});
+
+if(!user){
+    return res.status(400).json({
+        error:"User dosen't exist"
+    })
+}
+    res.status(200).
+    clearCookie("access_token")
+    .clearCookie("refresh_token")
+    .json({   
+         success:true,
+         message:"Logged out successfully"
+    })
+
+
+    }catch(err){
+        next(err);
+    }
+}
