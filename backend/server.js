@@ -3,7 +3,6 @@ import app from './app.js';
 import connectDB from './config/db.js';
 import { PORT, NODE_ENV } from './config/env.js';
 
-
 connectDB();
 
 const serverPort = PORT || 5000;
