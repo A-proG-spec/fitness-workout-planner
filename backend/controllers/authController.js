@@ -90,6 +90,7 @@ export const signUp=async(req,res,next)=>{
         delete newUserObj.password;
         res.status(201).json({
             success:true,
+            message:"Sign Up Successfully",
             data:{
                 user:newUserObj,
                 access_token,
@@ -176,6 +177,7 @@ export const logIn=async(req,res,next)=>{
         delete userloged.password;
         res.status(200).json({
             success:true,
+            message:"Logged in successfully",
         data:{
             user:userloged,
             refresh_token,
