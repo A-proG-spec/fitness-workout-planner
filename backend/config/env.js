@@ -1,21 +1,17 @@
-import {config} from 'dotenv';
-config ({path: `.env.${process.env.NODE_ENV || 'development'}.local`});
+import { config } from 'dotenv';
+config({ path: `.env.${process.env.NODE_ENV || 'development'}.local` });
 
-
-export const{
-    PORT,
-    NODE_ENV='development',
-    DB_URI='mongodb://localhost:27017/fitness_workout_planner',
-    ACCESS_TOKEN_EXPIRE_DATE='15m',
-    REFRESH_TOKEN_EXPIRE_DATE='7d',
-    ACCESS_TOKEN_PUBLIC_KEY,
-    ACCESS_TOKEN_PRIVATE_KEY,
-   REFRESH_TOKEN_PUBLIC_KEY,
-   REFRESH_TOKEN_PRIVATE_KEY,
-}={
-    ...process.env,
-   ACCESS_TOKEN_PUBLIC_KEY: process.env.ACCESS_TOKEN_PUBLIC_KEY?.replace(/\\n/g, '\n'),
-  ACCESS_TOKEN_PRIVATE_KEY: process.env.ACCESS_TOKEN_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  REFRESH_TOKEN_PUBLIC_KEY: process.env.REFRESH_TOKEN_PUBLIC_KEY?.replace(/\\n/g, '\n'),
-  REFRESH_TOKEN_PRIVATE_KEY: process.env.REFRESH_TOKEN_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-}
+export const {
+    // Server Configuration
+    PORT = 5000,
+    NODE_ENV = 'development',
+    DB_URI = 'mongodb://localhost:27017/fitness_workout_planner',
+    
+    // JWT Settings (Simple HS256 - No RSA Keys)
+    JWT_SECRET = 'your_super_secret_key_change_this_in_production_min_32_characters',
+    JWT_EXPIRE = '7d',
+    
+    // Keep these for compatibility (optional)
+    ACCESS_TOKEN_EXPIRE = '15m',
+    REFRESH_TOKEN_EXPIRE = '7d',
+} = process.env;

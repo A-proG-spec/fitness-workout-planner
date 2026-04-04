@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 
 // This defines what ONE exercise document looks like in MongoDB
 const ExerciseSchema = new mongoose.Schema(
@@ -126,4 +126,4 @@ ExerciseSchema.index({ name: 'text', description: 'text' });
 // ─── Compound index for fast filtering ───────────────────────────────────────
 ExerciseSchema.index({ muscleGroup: 1, difficulty: 1, equipment: 1 });
 
-module.exports = mongoose.model('Exercise', ExerciseSchema);
+export default mongoose.model('Excercise',ExerciseSchema)
