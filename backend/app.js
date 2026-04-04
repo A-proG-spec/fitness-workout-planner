@@ -26,6 +26,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/plan', planroute);
 app.use('/api/users/profile', profileRoutes);
+app.use('/api/auth', authRoutes);
 app.use((req, res) => {
   res.status(404).json({ success: false, error: 'Route not found' });
 });
