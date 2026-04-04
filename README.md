@@ -1,31 +1,34 @@
 # 💪 Fitness Workout Planner
 
-A web-based fitness workout planner that helps users create, customize, and track workout routines. It allows users to set goals, organize exercises, and monitor progress with a clean and intuitive experience.
+A full-stack web-based fitness workout planner that helps users create, customize, and track workout routines. Users can set goals, organize exercises, and monitor their progress through a clean and responsive interface.
 
 ---
 
 ## ✨ Features
 
-* 🔐 Authentication (JWT-based)
-* 👤 Profile management + BMI calculation
-* 💪 Exercise library with filters
-* 📅 Workout planning & scheduling
-* ✅ Progress tracking
-* 📊 Statistics & trends
-* 📱 Fully responsive UI
+* 🔐 JWT-based Authentication
+* 👤 User Profile Management
+* 🧮 BMI Calculation
+* 💪 Exercise Library with Filters
+* 📅 Workout Planning & Scheduling
+* ✅ Progress Tracking
+* 📊 Statistics & Trends
+* 📱 Fully Responsive Design
 
 ---
 
 ## 🛠 Tech Stack
 
-**Backend**
+### Backend
 
 * Node.js
 * Express.js
 * MongoDB + Mongoose
-* JWT, bcryptjs
+* JWT (Authentication)
+* bcryptjs (Password hashing)
+* express-validator
 
-**Frontend (Planned)**
+### Frontend (Planned)
 
 * React
 * Axios
@@ -41,7 +44,7 @@ A web-based fitness workout planner that helps users create, customize, and trac
 http://localhost:5000/api
 ```
 
-**Auth Header (for protected routes)**
+**Auth Header (Protected Routes)**
 
 ```
 Authorization: Bearer <token>
@@ -51,65 +54,74 @@ Authorization: Bearer <token>
 
 ## 🔐 Auth Routes
 
-| Method | Endpoint       | Description   |
-| ------ | -------------- | ------------- |
-| POST   | /auth/register | Register user |
-| POST   | /auth/login    | Login         |
-| POST   | /auth/refresh  | Refresh token |
-| POST   | /auth/logout   | Logout        |
-| GET    | /auth/me       | Current user  |
+| Method | Endpoint       | Description      |
+| ------ | -------------- | ---------------- |
+| POST   | /auth/register | Register user    |
+| POST   | /auth/login    | Login user       |
+| POST   | /auth/refresh  | Refresh token    |
+| POST   | /auth/logout   | Logout user      |
+| GET    | /auth/me       | Get current user |
 
 ---
 
 ## 👤 Profile Routes
 
-| Method | Endpoint     | Description    |
-| ------ | ------------ | -------------- |
-| GET    | /profile     | Get profile    |
-| PUT    | /profile     | Update profile |
-| POST   | /profile/bmi | Calculate BMI  |
+**Base Path:** `/api/profile`
+
+| Method | Endpoint | Description      |
+| ------ | -------- | ---------------- |
+| GET    | /        | Get user profile |
+| PUT    | /        | Update profile   |
+| POST   | /bmi     | Calculate BMI    |
 
 ---
 
 ## 💪 Exercise Routes
 
-| Method | Endpoint                   | Description      |
-| ------ | -------------------------- | ---------------- |
-| GET    | /exercises                 | Get exercises    |
-| GET    | /exercises/:id             | Get one exercise |
-| GET    | /exercises/filter-options  | Filters          |
-| GET    | /exercises/by-muscle-group | Grouped          |
-| POST   | /exercises                 | Create (Admin)   |
-| PUT    | /exercises/:id             | Update (Admin)   |
-| DELETE | /exercises/:id             | Delete (Admin)   |
+**Base Path:** `/api/exercises`
+
+| Method | Endpoint         | Description            |
+| ------ | ---------------- | ---------------------- |
+| GET    | /                | Get all exercises      |
+| GET    | /:id             | Get single exercise    |
+| GET    | /filter-options  | Get filter options     |
+| GET    | /by-muscle-group | Group exercises        |
+| GET    | /stats           | Exercise statistics    |
+| POST   | /                | Create exercise (Auth) |
+| PUT    | /:id             | Update exercise (Auth) |
+| DELETE | /:id             | Delete exercise (Auth) |
 
 ---
 
 ## 📅 Plan Routes
 
-| Method | Endpoint            | Description   |
-| ------ | ------------------- | ------------- |
-| POST   | /plans              | Create plan   |
-| GET    | /plans              | Get plans     |
-| GET    | /plans/daily        | Daily plans   |
-| GET    | /plans/weekly       | Weekly plans  |
-| PUT    | /plans/:id/complete | Mark complete |
-| PUT    | /plans/:id          | Update        |
-| DELETE | /plans/:id          | Delete        |
+**Base Path:** `/api/plans`
+
+| Method | Endpoint      | Description        |
+| ------ | ------------- | ------------------ |
+| POST   | /             | Create plan        |
+| GET    | /             | Get all plans      |
+| GET    | /daily        | Get daily plans    |
+| GET    | /weekly       | Get weekly plans   |
+| PUT    | /:id          | Update plan        |
+| PUT    | /:id/complete | Mark plan complete |
+| DELETE | /:id          | Delete plan        |
 
 ---
 
 ## 📊 Progress Routes
 
-| Method | Endpoint        | Description |
-| ------ | --------------- | ----------- |
-| POST   | /progress       | Add entry   |
-| GET    | /progress       | Get entries |
-| GET    | /progress/stats | Statistics  |
+**Base Path:** `/api/progress`
+
+| Method | Endpoint | Description              |
+| ------ | -------- | ------------------------ |
+| POST   | /        | Add progress entry       |
+| GET    | /        | Get all progress entries |
+| GET    | /stats   | Get progress statistics  |
 
 ---
 
-## 🏥 Health
+## 🏥 Health Check
 
 ```
 GET /health
@@ -117,41 +129,59 @@ GET /health
 
 ---
 
-## 🚀 Setup
+## 🚀 Setup & Installation
 
-```bash
-# Install
-npm install
+### 1. Clone the repository
 
-# Run dev
-npm run dev
-
-# Production
-npm start
+```
+git clone https://github.com/your-username/fitness-workout-planner.git
+cd fitness-workout-planner
 ```
 
-Create `.env`:
+### 2. Install dependencies
+
+```
+npm install
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file in the root directory:
 
 ```
 PORT=5000
 DB_URI=mongodb://localhost:27017/fitness
-JWT_SECRET=your_secret
+JWT_SECRET=your_secret_key
+```
+
+### 4. Run the application
+
+**Development**
+
+```
+npm run dev
+```
+
+**Production**
+
+```
+npm start
 ```
 
 ---
 
 ## 🧪 Test Flow
 
-1. Register
-2. Login → get token
-3. Use token for protected routes
-4. Create plan
-5. Track progress
-6. View stats
+1. Register a new user
+2. Login to receive JWT token
+3. Use token to access protected routes
+4. Create workout plans
+5. Log progress
+6. View statistics
 
 ---
 
-## 📁 Structure
+## 📁 Project Structure
 
 ```
 backend/
@@ -174,25 +204,31 @@ backend/
 * 400 Bad Request
 * 401 Unauthorized
 * 404 Not Found
-* 500 Server Error
+* 500 Internal Server Error
 
 ---
 
-## 🔒 Auth Flow
+## 🔒 Authentication Flow
 
-Register → Login → Receive JWT → Access protected routes
+Register → Login → Receive JWT → Access Protected Routes
 
 ---
 
 ## 📈 Progress Flow
 
-Plan workouts → Complete → Log progress → View stats
+Create Plan → Complete Workout → Log Progress → View Stats
 
 ---
 
 ## 🤝 Contributing
 
-PRs are welcome. Fork → branch → commit → push → PR.
+Contributions are welcome!
+
+1. Fork the repository
+2. Create a new branch (`feature/your-feature`)
+3. Commit your changes
+4. Push to your branch
+5. Open a Pull Request
 
 ---
 
@@ -204,12 +240,11 @@ ISC License
 
 ## 🚀 Quick Commands
 
-```bash
+```
 npm run dev
-npm run seed
 npm start
 ```
 
 ---
 
-**Status:** Active 🚀
+**Status:** 🚀 Active Development
