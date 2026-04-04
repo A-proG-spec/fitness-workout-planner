@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import { ACCESS_TOKEN_PUBLIC_KEY } from '../config/env.js';
+import { JWT_SECRET } from '../config/env.js';
 
 export const protect = async (req, res, next) => {
     let token;
@@ -19,9 +19,8 @@ export const protect = async (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, ACCESS_TOKEN_PUBLIC_KEY, {
-            algorithms: ['RS256']
-        });
+        // Simple verification - no algorithm specification needed
+        const decoded = jwt.verify(token, JWT_SECRET);
         
         req.user = await User.findById(decoded.user_id).select('-password');
         
@@ -35,6 +34,17 @@ export const protect = async (req, res, next) => {
     } catch (err) {
         const error = new Error('Not authorized, token failed');
         error.statusCode = 401;
+        next(error);
+    }
+};
+
+
+export const isAdmin = async (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        next();
+    } else {
+        const error = new Error('Admin access required');
+        error.statusCode = 403;
         next(error);
     }
 };

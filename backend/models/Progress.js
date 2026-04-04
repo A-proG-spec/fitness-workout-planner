@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const ProgressSchema = new mongoose.Schema({
-    user: {
+    Progress: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Progress',
         required: true
     },
     date: {
@@ -32,7 +32,8 @@ const ProgressSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Ensure one entry per user per day
-ProgressSchema.index({ user: 1, date: 1 }, { unique: true });
+// Ensure one entry per Progress per day
+ProgressSchema.index({ Progress: 1, date: 1 }, { unique: true });
 
-export default mongoose.model('Progress', ProgressSchema);
+const Progress = mongoose.models.Progress || mongoose.model('Progress', ProgressSchema);
+export default Progress;
