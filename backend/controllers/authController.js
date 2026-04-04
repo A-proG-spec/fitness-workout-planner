@@ -19,7 +19,7 @@ export const signUp=async(req,res,next)=>{
             dateOfBirth,
             height,
             fitnessGoal}=req.body
-        if(!name||!email||!password||!gender||dateOfBirth||!height||!fitnessGoal){
+        if(!name||!email||!password||!gender||!dateOfBirth||!height||!fitnessGoal){
             const error=new Error("All informations are required");
             error.statuscode=400;
             throw error;
@@ -164,7 +164,7 @@ export const logIn=async(req,res,next)=>{
          expireAt.setDate(expireAt.getDate()+7);
 
          const hashed_refresh_token=crypto
-                  .createHash(sha256)
+                  .createHash("sha256")
                   .update(refresh_token)
                   .digest("hex");
         await refresh_token.create({
@@ -213,3 +213,4 @@ if(!user){
         next(err);
     }
 }
+
