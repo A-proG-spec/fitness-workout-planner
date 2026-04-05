@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import useAsyncAction from '../../hooks/useAsyncAction';
 import { registerRequest } from '../../services/authService';
+import Alert from '../../components/ui/Alert';
 import heroImg from '../../assets/hero.png';
 
 function GoogleIcon() {
@@ -65,41 +67,32 @@ function EyeIcon({ open }) {
 export default function Register() {
   const navigate = useNavigate();
   const { login } = useAuth();
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { run, loading, error, setError } = useAsyncAction();
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    setError('');
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
-    if (!termsAccepted) {
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (!agreed) {
       setError('Please agree to the Terms of Service and Privacy Policy.');
       return;
     }
-
-    try {
-      setLoading(true);
-      const response = await registerRequest({ name, email, password });
+    run(async () => {
+      const response = await registerRequest(form);
       const payload = response?.data || {};
-
       login({
         userData: payload.user || null,
         accessToken: payload.access_token || '',
         remember: true,
       });
-
       navigate('/onboarding/1');
-    } catch {
-      setError('Registration failed. Please review your details.');
-    } finally {
-      setLoading(false);
-    }
+    }, 'Registration failed. Please review your details.');
   };
 
   return (
@@ -112,7 +105,10 @@ export default function Register() {
           <Link to="/" className="transition-colors hover:text-gray-900">
             Back to site
           </Link>
-          <a href="mailto:support@equilibrium.fitness" className="underline decoration-gray-400 underline-offset-4 transition-colors hover:text-gray-900">
+          <a
+            href="mailto:support@equilibrium.fitness"
+            className="underline decoration-gray-400 underline-offset-4 transition-colors hover:text-gray-900"
+          >
             Support
           </a>
         </div>
@@ -120,7 +116,6 @@ export default function Register() {
 
       <main className="flex flex-1 items-center justify-center px-4 pb-8 pt-2 md:px-6">
         <div className="w-full max-w-[960px] overflow-hidden rounded-2xl bg-white shadow-[0_25px_50px_-12px_rgba(0,0,0,0.12)] md:grid md:grid-cols-2 md:rounded-3xl">
-          {/* Marketing panel */}
           <aside className="relative flex min-h-[280px] flex-col justify-between bg-[#006D4E] p-8 text-white md:min-h-[620px] md:p-10 lg:p-12">
             <div className="relative z-10 space-y-4">
               <h1 className="font-ui text-2xl font-bold leading-tight tracking-tight md:text-3xl lg:text-[1.75rem]">
@@ -133,11 +128,7 @@ export default function Register() {
 
             <div className="relative z-10 my-6 flex flex-1 items-center justify-center md:my-8">
               <div className="relative w-full max-w-[280px] opacity-95 mix-blend-soft-light md:max-w-[320px]">
-                <img
-                  src={heroImg}
-                  alt=""
-                  className="h-auto w-full object-contain drop-shadow-2xl"
-                />
+                <img src={heroImg} alt="" className="h-auto w-full object-contain drop-shadow-2xl" />
               </div>
             </div>
 
@@ -167,19 +158,12 @@ export default function Register() {
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/5 to-black/20" aria-hidden />
           </aside>
 
-          {/* Form panel */}
           <div className="flex flex-col justify-center px-6 py-10 md:px-10 md:py-12 lg:px-14">
             <div className="mx-auto w-full max-w-md">
               <h2 className="font-ui text-2xl font-bold text-gray-900">Create Account</h2>
               <p className="mt-2 text-sm text-gray-500">
                 Start your journey toward The Living Equilibrium today.
               </p>
-
-              {error && (
-                <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
-                  {error}
-                </p>
-              )}
 
               <div className="mt-8 grid grid-cols-2 gap-3">
                 <button
@@ -207,16 +191,21 @@ export default function Register() {
                 </div>
               </div>
 
-              <form className="space-y-5" onSubmit={onSubmit} noValidate>
+              <div className="mt-4">
+                <Alert>{error}</Alert>
+              </div>
+
+              <form className="mt-4 space-y-5" onSubmit={onSubmit} noValidate>
                 <label className="block">
                   <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                     Full name
                   </span>
                   <input
-                    className="w-full rounded-lg border-0 bg-[#F3F4F6] px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-[#006D4E]/30 focus:outline-none"
+                    name="name"
+                    className="w-full rounded-lg border-0 bg-[#F3F4F6] px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#006D4E]/30"
                     placeholder="Julianne Moore"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={form.name}
+                    onChange={handleChange}
                     autoComplete="name"
                     required
                   />
@@ -227,11 +216,12 @@ export default function Register() {
                     Email address
                   </span>
                   <input
-                    className="w-full rounded-lg border-0 bg-[#F3F4F6] px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-[#006D4E]/30 focus:outline-none"
+                    name="email"
+                    className="w-full rounded-lg border-0 bg-[#F3F4F6] px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#006D4E]/30"
                     type="email"
                     placeholder="julianne@equilibrium.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={form.email}
+                    onChange={handleChange}
                     autoComplete="email"
                     required
                   />
@@ -243,11 +233,12 @@ export default function Register() {
                   </span>
                   <div className="relative">
                     <input
-                      className="w-full rounded-lg border-0 bg-[#F3F4F6] px-4 py-3 pr-12 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-[#006D4E]/30 focus:outline-none"
+                      name="password"
+                      className="w-full rounded-lg border-0 bg-[#F3F4F6] px-4 py-3 pr-12 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#006D4E]/30"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      value={form.password}
+                      onChange={handleChange}
                       minLength={8}
                       autoComplete="new-password"
                       required
@@ -267,18 +258,18 @@ export default function Register() {
                   <input
                     type="checkbox"
                     className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-[#006D4E] focus:ring-[#006D4E]"
-                    checked={termsAccepted}
-                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
                   />
                   <span>
                     I agree to the{' '}
-                    <a href="#" className="font-semibold text-[#006D4E] hover:underline">
+                    <Link to="/terms" className="font-semibold text-[#006D4E] hover:underline">
                       Terms of Service
-                    </a>{' '}
+                    </Link>{' '}
                     and{' '}
-                    <a href="#" className="font-semibold text-[#006D4E] hover:underline">
+                    <Link to="/privacy" className="font-semibold text-[#006D4E] hover:underline">
                       Privacy Policy
-                    </a>
+                    </Link>
                     .
                   </span>
                 </label>
@@ -306,12 +297,12 @@ export default function Register() {
       <footer className="mt-auto flex flex-col gap-4 px-6 py-6 text-[10px] font-semibold uppercase tracking-wider text-gray-400 md:flex-row md:items-center md:justify-between md:px-10">
         <p>© 2026 Equilibrium Fitness. Elevating wellness through intentional design.</p>
         <nav className="flex flex-wrap gap-x-5 gap-y-2">
-          <a href="#" className="hover:text-gray-600">
+          <Link to="/privacy" className="hover:text-gray-600">
             Privacy Policy
-          </a>
-          <a href="#" className="hover:text-gray-600">
+          </Link>
+          <Link to="/terms" className="hover:text-gray-600">
             Terms of Service
-          </a>
+          </Link>
           <a href="#" className="hover:text-gray-600">
             Cookie Policy
           </a>

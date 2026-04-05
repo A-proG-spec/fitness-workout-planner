@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -33,11 +32,11 @@ const UserSchema = new mongoose.Schema({
     },
     height: {
         type: Number,
-        comment: 'Height in cm'
+        default: null
     },
     weight: {
         type: Number,
-        comment: 'Weight in kg'
+        default: null
     },
     fitnessGoal: {
         type: String,
@@ -48,6 +47,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true

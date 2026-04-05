@@ -1,118 +1,169 @@
-import User from '../models/User';
-import bcrypt from 'bcrypt';
-import crypto from ' crypto';
 import jwt from 'jsonwebtoken';
-import{
-    ACCESS_TOKEN_EXPIRE_DATE,
-    ACCESS_TOKEN_PRIVATE_KEY,
-    REFRESH_TOKEN_EXPIRE_DATE,
-    REFRESH_TOKEN_PRIVATE_KEY,
-    REFRESH_TOKEN_PUBLIC_KEY,
-} from '../config/env';
+import bcrypt from 'bcryptjs';
+import User from '../models/User.js';
+import { JWT_SECRET, JWT_EXPIRE, NODE_ENV } from '../config/env.js';
 
-export const signUp=async(req,res,next)=>{
-    try{
-     const {name,
-            email,
-            password,
-            gender,
-            dateOfBirth,
-            height,
-            fitnessGoal}=req.body
-        if(!name||!email||!password||!gender||dateOfBirth||!height||!fitnessGoal){
-            const error=new Error("All informations are required");
-            error.statuscode=400;
+const generateToken = (userId) => {
+    return jwt.sign(
+        { user_id: userId }, 
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRE }
+    );
+};
+
+const setTokenCookie = (res, token) => {
+    res.cookie('access_token', token, {
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: NODE_ENV === 'production'
+    });
+};
+
+export const register = async (req, res, next) => {
+    try {
+        const { name, email, password, gender, dateOfBirth, height, weight, fitnessGoal } = req.body;
+
+        if (!name || !email || !password) {
+            const error = new Error('Name, email and password are required');
+            error.statusCode = 400;
             throw error;
         }
 
-        const emailExist=await User.findOne({email});
-        if(emailExist){
-            const error= new Error("Email already exists");
-            error.statusCode=409;
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            const error = new Error('Email already exists');
+            error.statusCode = 409;
             throw error;
         }
-        if(password.length < 8){
-            const error=new Error("Not strong password");
-            error.statusCode=409;
-            throw error;
-        }
-        const hashed_password=await bcrypt.hash(password,10);
 
-        const newUser= await User.create({
+        if (password.length < 6) {
+            const error = new Error('Password must be at least 6 characters');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        // ✅ Hash password here instead of in model
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const user = await User.create({
             name,
             email,
-            password:hashed_password,
+            password: hashedPassword,  // Use hashed password
             gender,
             dateOfBirth,
             height,
+            weight,
             fitnessGoal
         });
-        const access_token= jwt.sign(
-            {user_id:newUser._id},
-            ACCESS_TOKEN_PRIVATE_KEY,
-            {
-                algorithm:'RS256',
-                expiresIn:ACCESS_TOKEN_EXPIRE_DATE,
-            },
-        );
-        const refresh_token=jwt.sign(
-            {user_id:newUser._id},
-            REFRESH_TOKEN_PRIVATE_KEY,
-            {
-                algorithm:'RS256',
-                expiresIn:REFRESH_TOKEN_EXPIRE_DATE,
-            }
-        );
-        res.cookie("access_token",access_token,{
-            maxAge:60000 * 15,
-            sameSite:'lax',
-            httpOnly:true,
-            secure:false,
-        });
-        res.cookie("refresh_token",refresh_token,{
-            maxAge:60000 * 60 *24 *7,
-            sameSite:'lax',
-            httpOnly:true,
-            secure:false,
-        });
-        const hashed_refresh_token=crypto
-                  .createHash("sha256")
-                  .update(refresh_token)
-                  .digest("hex");
-        let expireAt=new Date();
-        expireAt.setDate(expireAt.getDate()+ 7);
-        await refresh_token.create({
-            user_id:newUser._id,
-            refresh_token:hashed_refresh_token,
-            expireAt,
-        });
-        const newUserObj=newUser.toObject();
-        delete newUserObj.password;
+
+        const token = generateToken(user._id);
+        setTokenCookie(res, token);
+
+        const userResponse = user.toObject();
+        delete userResponse.password;
+
         res.status(201).json({
-            success:true,
-            data:{
-                user:newUserObj,
-                access_token,
-                refresh_token
-            }
+            success: true,
+            message: 'User registered successfully',
+            data: { user: userResponse, token }
         });
-    }catch(err){
+    } catch (err) {
         next(err);
     }
-}
+};
 
+export const login = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
 
-export const logIn=async(req,res,next)=>{
-    try{
-         const {email,password}=req.body;
-         const emailExist=await User.findOne({email});
-         if(!emailExist){
-            const error=new Error("User didn't exist");
-            error.statusCode=400; 
-             throw error
-            }
-    }catch(err){
-        next(err)
+        if (!email || !password) {
+            const error = new Error('Email and password are required');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        const user = await User.findOne({ email }).select('+password');
+        
+        if (!user) {
+            const error = new Error('Invalid credentials');
+            error.statusCode = 401;
+            throw error;
+        }
+
+        // ✅ Compare passwords
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        
+        if (!isPasswordMatch) {
+            const error = new Error('Invalid credentials');
+            error.statusCode = 401;
+            throw error;
+        }
+
+        const token = generateToken(user._id);
+        setTokenCookie(res, token);
+
+        const userResponse = user.toObject();
+        delete userResponse.password;
+
+        res.status(200).json({
+            success: true,
+            message: 'Login successful',
+            data: { user: userResponse, token }
+        });
+    } catch (err) {
+        next(err);
     }
-}
+};
 
+export const logout = async (req, res, next) => {
+    try {
+        res.cookie('access_token', '', { maxAge: 0, httpOnly: true });
+        res.status(200).json({
+            success: true,
+            message: 'Logout successful'
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const getMe = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        
+        res.status(200).json({
+            success: true,
+            data: { user }
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const refreshToken = async (req, res, next) => {
+    try {
+        const token = req.cookies.access_token;
+        
+        if (!token) {
+            const error = new Error('No token provided');
+            error.statusCode = 401;
+            throw error;
+        }
+
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const newToken = generateToken(decoded.user_id);
+        setTokenCookie(res, newToken);
+
+        res.status(200).json({
+            success: true,
+            message: 'Token refreshed successfully',
+            data: { token: newToken }
+        });
+    } catch (err) {
+        const error = new Error('Invalid or expired token');
+        error.statusCode = 401;
+        next(error);
+    }
+};
