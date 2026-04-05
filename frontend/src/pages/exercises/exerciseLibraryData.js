@@ -34,46 +34,60 @@ export const trendingMovements = [
     category: 'Strength',
     duration: '15 min',
     level: 'Advanced',
+    calories: '180 kcal',
+    equipment: 'Kettlebell',
     description:
       'A total-body explosive movement that targets the posterior chain.',
     image:
       'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80',
+    to: '/exercise/kettlebell-swing',
   },
   {
     name: 'HIIT Sprints',
     category: 'Cardio',
     duration: '20 min',
     level: 'Elite',
+    calories: '240 kcal',
+    equipment: 'No Equipment',
     description:
       'High-intensity interval training designed to maximize VO2 max.',
     image:
       'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80',
+    to: '/exercise/hiit-sprints',
   },
   {
     name: 'Vinyasa Flow',
     category: 'Flexibility',
     duration: '18 min',
     level: 'Beginner',
+    calories: '90 kcal',
+    equipment: 'Yoga Mat',
     description:
       'A sequence of movements that synchronize breath with motion.',
     image:
       'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=900&q=80',
+    to: '/exercise/vinyasa-flow',
   },
   {
     name: 'Wide Grip Pull-up',
     category: 'Strength',
     duration: '10 min',
     level: 'Intermediate',
+    calories: '120 kcal',
+    equipment: 'Pull-up Bar',
     description:
       'Focuses on lat activation and scapular control for upper-back growth.',
     image:
       'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=900&q=80',
+    to: '/exercise/wide-grip-pullup',
   },
   {
     name: 'Plyo Box Jumps',
     category: 'Cardio',
     duration: '12 min',
     level: 'Advanced',
+    calories: '150 kcal',
+    equipment: 'Plyo Box',
     description:
       'Explosive power and coordination work for conditioning.',
     image:
@@ -84,6 +98,8 @@ export const trendingMovements = [
     category: 'Strength',
     duration: '30 min',
     level: 'Intermediate',
+    calories: '220 kcal',
+    equipment: 'Barbell & Rack',
     description:
       'The foundational lower-body strength builder focusing on depth and drive.',
     image:
@@ -94,6 +110,8 @@ export const trendingMovements = [
     category: 'Flexibility',
     duration: '9 min',
     level: 'Beginner',
+    calories: '45 kcal',
+    equipment: 'Yoga Mat',
     description:
       'Deep hip opener that relieves tension in the glutes and lower back.',
     image:

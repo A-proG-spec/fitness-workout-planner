@@ -75,7 +75,7 @@ export default function Register() {
         </div>
 
         {/* Right panel */}
-        <div className="flex-1 min-w-0 overflow-hidden flex flex-col justify-center px-6 py-5 gap-3">
+        <div className="flex-1 min-w-0 overflow-y-auto flex flex-col px-6 py-5 gap-3">
           <div>
             <h1 className="text-xl font-bold text-gray-900">Create Account</h1>
             <p className="text-xs text-gray-500 mt-0.5">Start your journey toward intentional wellness today.</p>
@@ -125,7 +125,7 @@ export default function Register() {
             </Button>
           </form>
 
-          <p className="text-center text-xs text-gray-500">
+          <p className="text-center text-xs text-gray-500 pb-2">
             Already have an account?{' '}
             <Link to="/login" className="font-semibold text-gray-900 hover:underline">Sign In</Link>
           </p>

@@ -23,11 +23,11 @@ const sidebarPrimaryLinks = [
   { label: 'Dashboard', active: false, icon: GridIcon, to: '/dashboard' },
   { label: 'Workouts', active: true, icon: WorkoutIcon, to: '/exercises' },
   { label: 'Progress', active: false, icon: ChartIcon, to: '/progress' },
-  { label: 'Community', active: false, icon: UsersIcon, to: '/profile' },
+  { label: 'Community', active: false, icon: UsersIcon, to: '/community' },
 ];
 
 const sidebarSecondaryLinks = [
-  { label: 'Support', icon: HelpIcon, to: '/profile' },
+  { label: 'Support', icon: HelpIcon, to: '#' },
   { label: 'Sign Out', icon: LogoutIcon, to: '/login' },
 ];
 
@@ -35,7 +35,7 @@ const navLinks = [
   { label: 'Dashboard', to: '/dashboard', active: false },
   { label: 'Workouts', to: '/exercises', active: true },
   { label: 'Progress', to: '/progress', active: false },
-  { label: 'Community', to: '/profile', active: false },
+  { label: 'Community', to: '/community', active: false },
 ];
 
 export default function ExerciseLibrary() {

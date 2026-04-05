@@ -84,9 +84,13 @@ export default function Navbar({
             <GearIcon />
           </button>
 
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-[radial-gradient(circle_at_top,_#fde68a,_#f97316_62%,_#7c2d12)] text-sm font-bold text-white shadow-sm">
+          <Link
+            to="/profile"
+            className="grid h-10 w-10 place-items-center rounded-full bg-[radial-gradient(circle_at_top,_#fde68a,_#f97316_62%,_#7c2d12)] text-sm font-bold text-white shadow-sm hover:opacity-90 transition-opacity"
+            aria-label="Profile"
+          >
             {userInitials}
-          </div>
+          </Link>
         </div>
       </div>
     </header>

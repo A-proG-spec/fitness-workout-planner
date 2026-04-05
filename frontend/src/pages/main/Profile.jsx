@@ -14,20 +14,22 @@ const sidebarPrimaryLinks = [
   { label: 'Dashboard', active: false, icon: GridIcon, to: '/dashboard' },
   { label: 'Workouts', active: false, icon: WorkoutIcon, to: '/exercises' },
   { label: 'Progress', active: false, icon: ChartIcon, to: '/progress' },
-  { label: 'Community', active: false, icon: UsersIcon, to: '/profile' },
+  { label: 'Community', active: false, icon: UsersIcon, to: '/community' },
 ];
 
 const sidebarSecondaryLinks = [
-  { label: 'Support', icon: HelpIcon, to: '/profile' },
+  { label: 'Support', icon: HelpIcon, to: '#' },
   { label: 'Sign Out', icon: LogoutIcon, to: '/login' },
 ];
 
 const navLinks = [
-  { label: 'Profile', to: '/profile', active: true },
+  { label: 'Dashboard', to: '/dashboard', active: false },
+  { label: 'Workouts', to: '/exercises', active: false },
+  { label: 'Progress', to: '/progress', active: false },
+  { label: 'Community', to: '/community', active: false },
 ];
 
 export default function Profile() {
-  const [darkMode, setDarkMode] = useState(false);
   const [pushNotifications, setPushNotifications] = useState(true);
   const [formData, setFormData] = useState({
     email: 'elena.r@lifestyle.com',
@@ -241,33 +243,6 @@ export default function Profile() {
                   </div>
 
                   <div className="space-y-5">
-                    {/* Dark Appearance */}
-                    <div className="flex items-start gap-4">
-                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-600">
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-semibold text-slate-900">Dark Appearance</h3>
-                        <p className="mt-0.5 text-xs text-slate-500">Switch to a darker theme for night use</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setDarkMode(!darkMode)}
-                        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
-                          darkMode ? 'bg-emerald-600' : 'bg-slate-300'
-                        }`}
-                        aria-label="Toggle dark mode"
-                      >
-                        <span
-                          className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
-                            darkMode ? 'translate-x-6' : 'translate-x-1'
-                          }`}
-                        />
-                      </button>
-                    </div>
-
                     {/* Push Notifications */}
                     <div className="flex items-start gap-4">
                       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-100 text-emerald-600">

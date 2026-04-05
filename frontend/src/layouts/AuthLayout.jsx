@@ -8,9 +8,7 @@ function AuthHeader() {
       </Link>
       <nav className="flex items-center gap-6 text-sm text-gray-600">
         <Link to="/" className="hover:text-gray-900 transition-colors">Back to site</Link>
-        <Link to="/support" className="text-emerald-600 font-medium hover:underline transition-colors">
-          Support
-        </Link>
+        <span className="text-gray-400 cursor-not-allowed">Support</span>
       </nav>
     </header>
   );
@@ -21,10 +19,10 @@ function AuthFooter() {
     <footer className="shrink-0 flex flex-col sm:flex-row items-center justify-between px-8 py-3 text-xs text-gray-400 uppercase tracking-wide gap-2 border-t border-gray-100 bg-white">
       <span>© {new Date().getFullYear()} HulFit. All rights reserved.</span>
       <nav className="flex gap-5">
-        <Link to="/privacy" className="hover:text-gray-600 transition-colors">Privacy Policy</Link>
-        <Link to="/terms" className="hover:text-gray-600 transition-colors">Terms of Service</Link>
-        <Link to="/cookies" className="hover:text-gray-600 transition-colors">Cookie Policy</Link>
-        <Link to="/accessibility" className="hover:text-gray-600 transition-colors">Accessibility</Link>
+        <span className="cursor-not-allowed">Privacy Policy</span>
+        <span className="cursor-not-allowed">Terms of Service</span>
+        <span className="cursor-not-allowed">Cookie Policy</span>
+        <span className="cursor-not-allowed">Accessibility</span>
       </nav>
     </footer>
   );

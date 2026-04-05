@@ -1,22 +1,9 @@
-import { apiFetch } from './api';
-import { getStoredAccessToken } from '../utils/authStorage';
+import axios from '../config/axios';
 
-const buildAuthHeaders = (token) => {
-    if (!token) return {};
-    return { Authorization: `Bearer ${token}` };
-};
-
-export function getProfile(token = getStoredAccessToken()) {
-    return apiFetch('/users/profile', {
-        method: 'GET',
-        headers: buildAuthHeaders(token),
-    });
+export function getProfile() {
+  return axios.get('/users/profile');
 }
 
-export function updateProfile(payload, token = getStoredAccessToken()) {
-    return apiFetch('/users/profile', {
-        method: 'PUT',
-        headers: buildAuthHeaders(token),
-        body: JSON.stringify(payload),
-    });
+export function updateProfile(payload) {
+  return axios.put('/users/profile', payload);
 }

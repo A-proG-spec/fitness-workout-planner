@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
+import BarChart from '../../components/charts/BarChart';
 import {
   GridIcon,
   WorkoutIcon,
@@ -15,11 +16,11 @@ const sidebarPrimaryLinks = [
   { label: 'Dashboard', active: true, icon: GridIcon, to: '/dashboard' },
   { label: 'Workouts', active: false, icon: WorkoutIcon, to: '/exercises' },
   { label: 'Progress', active: false, icon: ChartIcon, to: '/progress' },
-  { label: 'Community', active: false, icon: UsersIcon, to: '/profile' },
+  { label: 'Community', active: false, icon: UsersIcon, to: '/community' },
 ];
 
 const sidebarSecondaryLinks = [
-  { label: 'Support', icon: HelpIcon, to: '/profile' },
+  { label: 'Support', icon: HelpIcon, to: '#' },
   { label: 'Sign Out', icon: LogoutIcon, to: '/login' },
 ];
 
@@ -27,7 +28,7 @@ const navLinks = [
   { label: 'Dashboard', to: '/dashboard', active: true },
   { label: 'Workouts', to: '/exercises', active: false },
   { label: 'Progress', to: '/progress', active: false },
-  { label: 'Community', to: '/profile', active: false },
+  { label: 'Community', to: '/community', active: false },
 ];
 
 const todayWorkouts = [
@@ -39,16 +40,6 @@ const recentActivity = [
   { name: 'Full Body HIIT', date: 'Yesterday', duration: '35 min', calories: 420 },
   { name: 'Yoga Flow', date: '2 days ago', duration: '30 min', calories: 180 },
   { name: 'Leg Day', date: '3 days ago', duration: '50 min', calories: 380 },
-];
-
-const weeklyStats = [
-  { day: 'Mon', value: 85 },
-  { day: 'Tue', value: 92 },
-  { day: 'Wed', value: 78 },
-  { day: 'Thu', value: 95 },
-  { day: 'Fri', value: 88 },
-  { day: 'Sat', value: 70 },
-  { day: 'Sun', value: 60 },
 ];
 
 export default function Dashboard() {
@@ -78,27 +69,23 @@ export default function Dashboard() {
                   value="5"
                   change="+2 from last week"
                   positive
-                  icon="🏋️"
                 />
                 <StatCard
                   label="Total Calories Burned"
                   value="2,840"
                   change="This week"
-                  icon="🔥"
                 />
                 <StatCard
                   label="Current Streak"
                   value="14 days"
                   change="Personal best!"
                   positive
-                  icon="⚡"
                 />
                 <StatCard
                   label="Avg Workout Time"
                   value="42 min"
                   change="+5 min from last week"
                   positive
-                  icon="⏱️"
                 />
               </div>
 
@@ -162,34 +149,32 @@ export default function Dashboard() {
                   <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200/80">
                     <h2 className="text-xl font-bold text-slate-900 mb-6">Weekly Activity</h2>
                     
-                    <div className="flex h-48 items-end justify-between gap-3">
-                      {weeklyStats.map((stat) => {
-                        const heightPercent = stat.value;
-                        const isToday = stat.day === 'Fri'; // Example: Friday is today
-                        
-                        return (
-                          <div key={stat.day} className="flex flex-1 flex-col items-center gap-3">
-                            <div className="relative w-full">
-                              <div
-                                className={`w-full rounded-t-xl transition-all ${
-                                  isToday ? 'bg-emerald-600' : 'bg-slate-200 hover:bg-slate-300'
-                                }`}
-                                style={{ height: `${heightPercent * 1.5}px` }}
-                              />
-                              {isToday && (
-                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-2 py-1 text-xs font-semibold text-white">
-                                  {stat.value}%
-                                </div>
-                              )}
-                            </div>
-                            <span className={`text-xs font-semibold uppercase tracking-wider ${
-                              isToday ? 'text-emerald-600' : 'text-slate-400'
-                            }`}>
-                              {stat.day}
-                            </span>
-                          </div>
-                        );
-                      })}
+                    <div className="h-48">
+                      <BarChart
+                        data={{
+                          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                          datasets: [
+                            {
+                              label: 'Activity %',
+                              data: [85, 92, 78, 95, 88, 70, 60],
+                              backgroundColor: (context) => {
+                                const index = context.dataIndex;
+                                return index === 4 ? '#10b981' : '#e2e8f0';
+                              },
+                              borderRadius: 8,
+                              barThickness: 32,
+                            },
+                          ],
+                        }}
+                        options={{
+                          scales: {
+                            y: {
+                              beginAtZero: true,
+                              max: 100,
+                            },
+                          },
+                        }}
+                      />
                     </div>
                   </section>
 
@@ -298,11 +283,15 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ label, value, change, positive, icon }) {
+function StatCard({ label, value, change, positive }) {
   return (
     <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
       <div className="mb-3 flex items-center justify-between">
-        <span className="text-2xl">{icon}</span>
+        <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-100">
+          <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
         {positive && (
           <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
             ↑

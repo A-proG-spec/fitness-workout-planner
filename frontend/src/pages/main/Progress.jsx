@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
+import LineChart from '../../components/charts/LineChart';
+import BarChart from '../../components/charts/BarChart';
 import {
   GridIcon,
   WorkoutIcon,
@@ -14,39 +16,25 @@ const sidebarPrimaryLinks = [
   { label: 'Dashboard', active: false, icon: GridIcon, to: '/dashboard' },
   { label: 'Workouts', active: false, icon: WorkoutIcon, to: '/exercises' },
   { label: 'Progress', active: true, icon: ChartIcon, to: '/progress' },
-  { label: 'Community', active: false, icon: UsersIcon, to: '/profile' },
+  { label: 'Community', active: false, icon: UsersIcon, to: '/community' },
 ];
 
 const sidebarSecondaryLinks = [
-  { label: 'Support', icon: HelpIcon, to: '/profile' },
+  { label: 'Support', icon: HelpIcon, to: '#' },
   { label: 'Sign Out', icon: LogoutIcon, to: '/login' },
 ];
 
 const navLinks = [
-  { label: 'Overview', to: '/progress', active: true },
-  { label: 'Body Metrics', to: '/progress/body', active: false },
-  { label: 'Lift Tracking', to: '/progress/lifts', active: false },
+  { label: 'Dashboard', to: '/dashboard', active: false },
+  { label: 'Workouts', to: '/exercises', active: false },
+  { label: 'Progress', to: '/progress', active: true },
+  { label: 'Community', to: '/community', active: false },
 ];
 
 const recentPRs = [
   { name: 'Deadlift', subtitle: 'Max effort volume', value: '315 LBS', icon: '🏋️', color: 'bg-emerald-50 text-emerald-600' },
   { name: '5K Run', subtitle: 'Pace improvement', value: '22:15', icon: '🏃', color: 'bg-blue-50 text-blue-600' },
   { name: 'VO2 Max', subtitle: 'Calculated aerobic', value: '52.4', icon: '🫁', color: 'bg-emerald-50 text-emerald-600' },
-];
-
-const workoutFrequencyData = [
-  { week: 'W1', count: 3 },
-  { week: 'W2', count: 4 },
-  { week: 'W3', count: 5 },
-  { week: 'W4', count: 2 },
-  { week: 'W5', count: 4 },
-  { week: 'W6', count: 6 },
-  { week: 'W7', count: 3 },
-  { week: 'W8', count: 5 },
-  { week: 'W9', count: 4 },
-  { week: 'W10', count: 6 },
-  { week: 'W11', count: 3 },
-  { week: 'W12', count: 4 },
 ];
 
 export default function Progress() {
@@ -176,80 +164,69 @@ export default function Progress() {
                 </div>
 
                 {/* Chart */}
-                <div className="relative h-80">
-                  <svg className="h-full w-full" viewBox="0 0 800 300" preserveAspectRatio="none">
-                    {/* Grid lines */}
-                    {[0, 1, 2, 3, 4].map((i) => (
-                      <line
-                        key={i}
-                        x1="0"
-                        y1={60 * i}
-                        x2="800"
-                        y2={60 * i}
-                        stroke="#e2e8f0"
-                        strokeWidth="1"
-                        strokeDasharray="4 4"
-                      />
-                    ))}
-
-                    {/* Weight line (solid) */}
-                    <polyline
-                      points="0,240 133,220 266,200 400,180 533,170 666,150 800,140"
-                      fill="none"
-                      stroke="#10b981"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-
-                    {/* Body fat line (dashed) */}
-                    <polyline
-                      points="0,180 133,175 266,170 400,165 533,160 666,155 800,150"
-                      fill="none"
-                      stroke="#cbd5e1"
-                      strokeWidth="2"
-                      strokeDasharray="8 4"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-
-                    {/* Data points */}
-                    <circle cx="800" cy="140" r="6" fill="#10b981" />
-                  </svg>
-
-                  {/* Tooltip */}
-                  <div className="absolute right-12 top-8 rounded-2xl bg-slate-900 px-4 py-3 text-white shadow-xl">
-                    <p className="text-xs text-slate-400">APR 12, 2024</p>
-                    <div className="mt-1 flex items-baseline gap-4">
-                      <div>
-                        <p className="text-xs text-slate-400">Weight</p>
-                        <p className="text-lg font-bold">182.4 lbs</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-slate-400">Body Fat</p>
-                        <p className="text-lg font-bold">14.2%</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Month labels */}
-                  <div className="absolute bottom-0 left-0 right-0 flex justify-between px-4 text-xs text-slate-400 uppercase tracking-wider">
-                    {['NOV', 'DEC', 'JAN', 'FEB', 'MAR', 'APR'].map((month) => (
-                      <span key={month}>{month}</span>
-                    ))}
-                  </div>
-
-                  {/* Add entry button */}
-                  <button
-                    type="button"
-                    className="absolute bottom-4 right-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 transition-colors"
-                    aria-label="Add entry"
-                  >
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                  </button>
+                <div className="h-80">
+                  <LineChart
+                    data={{
+                      labels: ['NOV', 'DEC', 'JAN', 'FEB', 'MAR', 'APR'],
+                      datasets: [
+                        {
+                          label: 'Weight (lbs)',
+                          data: [190, 188, 186, 184, 183, 182.4],
+                          borderColor: '#10b981',
+                          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                          borderWidth: 3,
+                          tension: 0.4,
+                          fill: true,
+                          pointRadius: 4,
+                          pointHoverRadius: 6,
+                          pointBackgroundColor: '#10b981',
+                          pointBorderColor: '#fff',
+                          pointBorderWidth: 2,
+                        },
+                        {
+                          label: 'Body Fat %',
+                          data: [18, 17.5, 17, 16.5, 16, 14.2],
+                          borderColor: '#cbd5e1',
+                          backgroundColor: 'transparent',
+                          borderWidth: 2,
+                          borderDash: [8, 4],
+                          tension: 0.4,
+                          pointRadius: 3,
+                          pointHoverRadius: 5,
+                          pointBackgroundColor: '#cbd5e1',
+                          pointBorderColor: '#fff',
+                          pointBorderWidth: 2,
+                        },
+                      ],
+                    }}
+                    options={{
+                      plugins: {
+                        legend: {
+                          display: true,
+                          position: 'bottom',
+                          labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                              size: 12,
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
                 </div>
+
+                {/* Add entry button */}
+                <button
+                  type="button"
+                  className="absolute bottom-10 right-10 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 transition-colors"
+                  aria-label="Add entry"
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
               </section>
 
               {/* Bottom Row */}
@@ -258,21 +235,21 @@ export default function Progress() {
                 <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200/80">
                   <h2 className="text-xl font-bold text-slate-900 mb-6">Workout Frequency</h2>
                   
-                  <div className="flex h-64 items-end justify-between gap-2">
-                    {workoutFrequencyData.map((item) => {
-                      const maxCount = Math.max(...workoutFrequencyData.map(d => d.count));
-                      const heightPercent = (item.count / maxCount) * 100;
-                      
-                      return (
-                        <div key={item.week} className="flex flex-1 flex-col items-center gap-2">
-                          <div
-                            className="w-full rounded-t-lg bg-emerald-600 transition-all hover:bg-emerald-700"
-                            style={{ height: `${heightPercent}%` }}
-                          />
-                          <span className="text-xs text-slate-400 uppercase tracking-wider">{item.week}</span>
-                        </div>
-                      );
-                    })}
+                  <div className="h-64">
+                    <BarChart
+                      data={{
+                        labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12'],
+                        datasets: [
+                          {
+                            label: 'Workouts',
+                            data: [3, 4, 5, 2, 4, 6, 3, 5, 4, 6, 3, 4],
+                            backgroundColor: '#10b981',
+                            borderRadius: 8,
+                            barThickness: 24,
+                          },
+                        ],
+                      }}
+                    />
                   </div>
                 </section>
 

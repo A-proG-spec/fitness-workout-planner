@@ -6,6 +6,8 @@ import Dashboard from '../pages/main/Dashboard';
 import WorkoutPlanner from '../pages/main/WorkoutPlanner';
 import Progress from '../pages/main/Progress';
 import Profile from '../pages/main/Profile';
+import Community from '../pages/main/Community';
+import BMICalculator from '../pages/main/BMICalculator';
 import ExerciseLibrary from '../pages/exercises/ExerciseLibrary';
 import ExerciseDetail from '../pages/exercises/ExerciseDetail';
 import Onboarding1 from '../pages/onboarding/Onboarding1';
@@ -25,6 +27,8 @@ export default function AppRoutes() {
       <Route path="/workout-planner" element={<WorkoutPlanner />} />
       <Route path="/progress" element={<Progress />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/community" element={<Community />} />
+      <Route path="/bmi-calculator" element={<BMICalculator />} />
       <Route path="/exercises" element={<ExerciseLibrary />} />
       <Route path="/exercise/:id" element={<ExerciseDetail />} />
     </Routes>

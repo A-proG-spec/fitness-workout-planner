@@ -1,15 +1,9 @@
-import { apiFetch } from './api';
+import axios from '../config/axios';
 
 export function loginRequest(payload) {
-    return apiFetch('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-    });
+  return axios.post('/auth/login', payload);
 }
 
 export function registerRequest(payload) {
-    return apiFetch('/auth/register', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-    });
+  return axios.post('/auth/register', payload);
 }
