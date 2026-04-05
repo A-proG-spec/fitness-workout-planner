@@ -45,7 +45,7 @@ function ExerciseSidebar() {
     <aside className="hidden border-r border-slate-200 bg-white px-5 py-6 lg:flex lg:flex-col">
       <div className="mb-8">
         <Link to="/" className="text-xl font-bold tracking-tight text-emerald-600">
-          Equilibrium
+          💪 HulFit
         </Link>
       </div>
 
@@ -70,14 +70,14 @@ function ExerciseSidebar() {
         })}
       </nav>
 
-      <div className="mt-8 rounded-3xl bg-gradient-to-br from-emerald-900 via-emerald-700 to-teal-500 p-4 text-white shadow-lg">
+      <div className="mt-8 rounded-3xl bg-linear-to-br from-emerald-900 via-emerald-700 to-teal-500 p-4 text-white shadow-lg">
         <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-emerald-100">
           Pro Plan
         </p>
         <h3 className="mt-3 text-base font-semibold">Unlock AI Form Coach & Pro Routines.</h3>
         <button
           type="button"
-          className="mt-5 inline-flex rounded-full bg-white px-4 py-2 text-xs font-semibold text-emerald-700"
+          className="mt-5 inline-flex rounded-full bg-white px-10 py-2 text-xs font-semibold text-emerald-700"
         >
           Upgrade to Pro
         </button>
@@ -148,7 +148,7 @@ function ExerciseTopbar() {
             <GearIcon className="h-4 w-4" />
           </button>
 
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-[radial-gradient(circle_at_top,_#fde68a,_#f97316_62%,_#7c2d12)] text-sm font-bold text-white shadow-sm">
+          <div className="grid h-10 w-10 place-items-center rounded-full bg-[radial-gradient(circle_at_top,#fde68a,#f97316_62%,#7c2d12)] text-sm font-bold text-white shadow-sm">
             AJ
           </div>
         </div>
@@ -191,14 +191,14 @@ function ExerciseHeader() {
 function FeatureSection() {
   return (
     <section className="grid gap-5 xl:grid-cols-[minmax(0,1.75fr)_320px]">
-      <article className="relative overflow-hidden rounded-[32px] bg-slate-950 px-6 py-6 shadow-[0_26px_50px_rgba(15,23,42,0.18)] sm:px-8 sm:py-8">
+      <article className="relative overflow-hidden rounded-4xl bg-slate-950 px-6 py-6 shadow-[0_26px_50px_rgba(15,23,42,0.18)] sm:px-8 sm:py-8">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-75"
           style={{ backgroundImage: `url(${featuredExercise.image})` }}
         />
         <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(2,6,23,0.92),rgba(15,23,42,0.62),rgba(15,23,42,0.18))]" />
 
-        <div className="relative flex min-h-[340px] flex-col justify-end">
+        <div className="relative flex min-h-85 flex-col justify-end">
           <span className="mb-4 inline-flex w-fit rounded-full bg-emerald-400 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.26em] text-emerald-950">
             {featuredExercise.eyebrow}
           </span>
@@ -234,7 +234,7 @@ function SpotlightCard() {
         <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/70 text-emerald-500">
           <LightningIcon className="h-5 w-5" />
         </div>
-        <h3 className="max-w-[14rem] text-2xl font-semibold leading-tight text-slate-800">
+        <h3 className="max-w-56 text-2xl font-semibold leading-tight text-slate-800">
           {spotlightCard.title}
         </h3>
         <p className="mt-3 max-w-[16rem] text-sm leading-6 text-slate-500">
