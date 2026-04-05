@@ -101,6 +101,9 @@ export default function EquilibriumShell({ children, searchPlaceholder = 'Search
             <NavLink to="/progress" className={navClass}>
               Progress
             </NavLink>
+            <NavLink to="/profile" className={navClass}>
+              Profile
+            </NavLink>
             <NavLink to="/community" className={navClass} onClick={(e) => e.preventDefault()}>
               Community
             </NavLink>
@@ -169,6 +172,9 @@ export default function EquilibriumShell({ children, searchPlaceholder = 'Search
             </button>
             <NavLink to="/progress" className={({ isActive }) => sideRow(isActive)}>
               Progress
+            </NavLink>
+            <NavLink to="/profile" className={({ isActive }) => sideRow(isActive)}>
+              Profile
             </NavLink>
             <button type="button" className={sideRow(false)} onClick={(e) => e.preventDefault()}>
               Community
