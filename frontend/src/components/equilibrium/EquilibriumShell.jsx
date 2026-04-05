@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 const GREEN = '#0d4a3a';
+const GREEN_ACCENT = '#006D44';
 const GREEN_LIGHT = '#0f766e';
 
 function IconBell({ className }) {
@@ -29,19 +30,46 @@ function IconSearch({ className }) {
   );
 }
 
+function IconQuestionMark({ className }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12V17.25z" />
+    </svg>
+  );
+}
+
+function IconArrowRightOn({ className }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+    </svg>
+  );
+}
+
+function topNavWorkoutsClass({ isActive }, pathname) {
+  const on =
+    isActive || pathname.startsWith('/exercise/') || pathname.startsWith('/workout-planner');
+  return `text-sm font-medium transition-colors ${on ? 'text-[#0d4a3a]' : 'text-gray-500 hover:text-gray-800'}`;
+}
+
 const navClass = ({ isActive }) =>
   `text-sm font-medium transition-colors ${isActive ? 'text-[#0d4a3a]' : 'text-gray-500 hover:text-gray-800'}`;
 
-function sideItemClass(active) {
-  return `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-    active ? 'bg-emerald-50 text-[#0d4a3a]' : 'text-gray-600 hover:bg-gray-50'
+function sideRow(active) {
+  return `flex w-full items-center rounded-l-xl border-r-4 px-3 py-2.5 text-left text-sm font-medium transition-colors ${
+    active
+      ? 'border-[#006D44] bg-gray-100 text-[#0d4a3a]'
+      : 'border-transparent text-gray-600 hover:bg-gray-50'
   }`;
 }
 
 /**
- * @param {{ children: import('react').ReactNode }} props
+ * @param {{
+ *   children: import('react').ReactNode;
+ *   searchPlaceholder?: string;
+ * }} props
  */
-export default function EquilibriumShell({ children }) {
+export default function EquilibriumShell({ children, searchPlaceholder = 'Search movements…' }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -54,7 +82,6 @@ export default function EquilibriumShell({ children }) {
 
   return (
     <div className="font-ui min-h-screen bg-[#f6f7f8] text-gray-900">
-      {/* Top bar */}
       <header className="sticky top-0 z-40 border-b border-gray-200/80 bg-white/95 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-6 px-4 lg:px-8">
           <Link to="/dashboard" className="shrink-0 font-brand text-xl font-semibold tracking-tight" style={{ color: GREEN }}>
@@ -65,7 +92,7 @@ export default function EquilibriumShell({ children }) {
             <NavLink to="/dashboard" className={navClass}>
               Dashboard
             </NavLink>
-            <NavLink to="/exercises" className={navClass}>
+            <NavLink to="/exercises" className={(props) => topNavWorkoutsClass(props, pathname)}>
               Workouts
             </NavLink>
             <NavLink to="/nutrition" className={navClass} onClick={(e) => e.preventDefault()}>
@@ -76,13 +103,24 @@ export default function EquilibriumShell({ children }) {
             </NavLink>
           </nav>
 
-          <div className="ml-auto flex flex-1 items-center justify-end gap-3 md:max-w-md md:flex-initial lg:max-w-lg">
-            <label className="relative hidden min-w-0 flex-1 sm:block">
+          <div className="mx-auto hidden max-w-xl flex-1 px-4 md:block lg:max-w-2xl">
+            <label className="relative block w-full">
               <IconSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <input
                 type="search"
-                placeholder="Search movements…"
-                className="w-full rounded-full border border-gray-200 bg-gray-50 py-2 pl-10 pr-4 text-sm outline-none ring-[#0d4a3a] transition-shadow focus:bg-white focus:ring-2"
+                placeholder={searchPlaceholder}
+                className="w-full rounded-full border border-gray-200 bg-gray-50 py-2 pl-10 pr-4 text-sm outline-none ring-[#006D44] transition-shadow focus:bg-white focus:ring-2"
+              />
+            </label>
+          </div>
+
+          <div className="ml-auto flex shrink-0 items-center justify-end gap-2 sm:gap-3">
+            <label className="relative min-w-0 flex-1 sm:max-w-[200px] md:hidden">
+              <IconSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <input
+                type="search"
+                placeholder={searchPlaceholder}
+                className="w-full rounded-full border border-gray-200 bg-gray-50 py-2 pl-10 pr-4 text-sm outline-none focus:bg-white focus:ring-2 focus:ring-[#006D44]/30"
               />
             </label>
             <button type="button" className="rounded-full p-2 text-gray-500 hover:bg-gray-100" aria-label="Notifications">
@@ -103,68 +141,64 @@ export default function EquilibriumShell({ children }) {
       </header>
 
       <div className="mx-auto flex max-w-[1600px]">
-        {/* Sidebar */}
         <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-56 shrink-0 flex-col border-r border-gray-200/80 bg-white py-6 md:flex xl:w-64">
-          <nav className="flex flex-col gap-0.5 px-3">
-            <NavLink to="/dashboard" end className={({ isActive }) => sideItemClass(isActive)}>
-              {({ isActive }) => (
-                <>
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: isActive ? GREEN : 'transparent' }} />
-                  Dashboard
-                </>
-              )}
+          <div className="mb-6 px-4">
+            <p className="font-brand text-lg font-semibold leading-tight" style={{ color: GREEN }}>
+              Equilibrium
+            </p>
+            <p className="mt-0.5 text-[11px] font-medium tracking-wide text-gray-400">Premium Wellness</p>
+          </div>
+
+          <nav className="flex flex-col gap-0.5 pr-0 pl-0">
+            <NavLink to="/dashboard" end className={({ isActive }) => sideRow(isActive)}>
+              Dashboard
             </NavLink>
-            <NavLink to="/exercises" className={({ isActive }) => sideItemClass(isActive || pathname.startsWith('/exercise/'))}>
-              {({ isActive }) => (
-                <>
-                  <span
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ background: isActive || pathname.startsWith('/exercise/') ? GREEN : 'transparent' }}
-                  />
-                  Workouts
-                </>
-              )}
+            <NavLink
+              to="/exercises"
+              className={({ isActive }) =>
+                sideRow(isActive || pathname.startsWith('/exercise/') || pathname.startsWith('/workout-planner'))
+              }
+            >
+              Workouts
             </NavLink>
-            <button type="button" className={sideItemClass(false)} onClick={(e) => e.preventDefault()}>
-              <span className="h-1.5 w-1.5 rounded-full bg-transparent" />
+            <button type="button" className={sideRow(false)} onClick={(e) => e.preventDefault()}>
               Nutrition
             </button>
-            <NavLink to="/progress" className={({ isActive }) => sideItemClass(isActive)}>
-              {({ isActive }) => (
-                <>
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: isActive ? GREEN : 'transparent' }} />
-                  Progress
-                </>
-              )}
+            <NavLink to="/progress" className={({ isActive }) => sideRow(isActive)}>
+              Progress
             </NavLink>
-            <button type="button" className={sideItemClass(false)} onClick={(e) => e.preventDefault()}>
-              <span className="h-1.5 w-1.5 rounded-full bg-transparent" />
+            <button type="button" className={sideRow(false)} onClick={(e) => e.preventDefault()}>
               Community
             </button>
           </nav>
 
-          <div className="mx-3 mt-8 rounded-2xl p-4 text-white" style={{ background: `linear-gradient(145deg, ${GREEN} 0%, #063d32 100%)` }}>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/70">Pro plan</p>
-            <p className="mt-2 text-sm font-semibold leading-snug">Unlock advanced analytics &amp; coaching</p>
-            <button
-              type="button"
-              className="mt-4 w-full rounded-xl bg-white py-2.5 text-sm font-semibold text-[#0d4a3a] transition-opacity hover:opacity-95"
-            >
-              Upgrade to Pro
-            </button>
-          </div>
+          <button
+            type="button"
+            className="mx-3 mt-8 rounded-xl py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-95"
+            style={{ backgroundColor: GREEN_ACCENT }}
+          >
+            Upgrade to Pro
+          </button>
 
-          <div className="mt-auto flex flex-col gap-1 border-t border-gray-100 px-3 pt-6">
-            <a href="mailto:support@equilibrium.fitness" className="rounded-xl px-3 py-2 text-sm text-gray-500 hover:bg-gray-50">
+          <div className="mt-auto flex flex-col gap-0.5 border-t border-gray-100 px-3 pt-6">
+            <a
+              href="mailto:support@equilibrium.fitness"
+              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-gray-500 hover:bg-gray-50"
+            >
+              <IconQuestionMark className="h-4 w-4 shrink-0 opacity-60" />
               Support
             </a>
-            <button type="button" onClick={handleSignOut} className="rounded-xl px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-50">
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-50"
+            >
+              <IconArrowRightOn className="h-4 w-4 shrink-0 opacity-60" />
               Sign out
             </button>
           </div>
         </aside>
 
-        {/* Main */}
         <main className="min-w-0 flex-1 px-4 py-6 lg:px-8 lg:py-8">{children}</main>
       </div>
     </div>
