@@ -7,14 +7,14 @@ const buildAuthHeaders = (token) => {
 };
 
 export function getProfile(token = getStoredAccessToken()) {
-    return apiFetch('/users/profile', {
+    return apiFetch('/profile', {
         method: 'GET',
         headers: buildAuthHeaders(token),
     });
 }
 
 export function updateProfile(payload, token = getStoredAccessToken()) {
-    return apiFetch('/users/profile', {
+    return apiFetch('/profile', {
         method: 'PUT',
         headers: buildAuthHeaders(token),
         body: JSON.stringify(payload),
