@@ -4,7 +4,6 @@ import ExerciseCard from '../../components/ExerciseCard';
 import {
   GridIcon,
   WorkoutIcon,
-  ForkIcon,
   ChartIcon,
   UsersIcon,
   HelpIcon,
@@ -23,7 +22,6 @@ import {
 const sidebarPrimaryLinks = [
   { label: 'Dashboard', active: false, icon: GridIcon, to: '/dashboard' },
   { label: 'Workouts', active: true, icon: WorkoutIcon, to: '/exercises' },
-  { label: 'Nutrition', active: false, icon: ForkIcon, to: '/workout-planner' },
   { label: 'Progress', active: false, icon: ChartIcon, to: '/progress' },
   { label: 'Community', active: false, icon: UsersIcon, to: '/profile' },
 ];
@@ -36,7 +34,7 @@ const sidebarSecondaryLinks = [
 const navLinks = [
   { label: 'Dashboard', to: '/dashboard', active: false },
   { label: 'Workouts', to: '/exercises', active: true },
-  { label: 'Nutrition', to: '/workout-planner', active: false },
+  { label: 'Progress', to: '/progress', active: false },
   { label: 'Community', to: '/profile', active: false },
 ];
 
