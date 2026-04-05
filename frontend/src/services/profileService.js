@@ -1,9 +1,15 @@
 import axios from '../config/axios';
 
-export function getProfile() {
-  return axios.get('/users/profile');
-}
+export const profileService = {
+  // Get user profile
+  getProfile: async () => {
+    const response = await axios.get('/profile');
+    return response.data;
+  },
 
-export function updateProfile(payload) {
-  return axios.put('/users/profile', payload);
-}
+  // Update user profile
+  updateProfile: async (profileData) => {
+    const response = await axios.put('/profile', profileData);
+    return response.data;
+  },
+};

@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
+import { useAuth } from '../../context/AuthContext';
+import { profileService } from '../../services/profileService';
 import {
   GridIcon,
   WorkoutIcon,
@@ -30,22 +32,86 @@ const navLinks = [
 ];
 
 export default function Profile() {
+  const { user } = useAuth();
   const [pushNotifications, setPushNotifications] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+  
   const [formData, setFormData] = useState({
-    email: 'elena.r@lifestyle.com',
-    location: 'Barcelona, Spain',
-    gender: 'Female',
-    birthDate: '05/12/1995',
+    name: '',
+    email: '',
+    gender: 'Other',
+    dateOfBirth: '',
+    height: '',
+    weight: '',
+    fitnessGoal: 'General Fitness',
   });
+
+  // Get user initials for avatar
+  const userInitials = user?.name
+    ?.split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'U';
+
+  // Fetch profile data on mount
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await profileService.getProfile();
+      if (response.success) {
+        const profile = response.data;
+        setFormData({
+          name: profile.name || '',
+          email: profile.email || '',
+          gender: user?.gender || 'Other',
+          dateOfBirth: user?.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
+          height: profile.height || '',
+          weight: profile.weight || '',
+          fitnessGoal: user?.fitnessGoal || 'General Fitness',
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    console.log('Saving changes:', formData);
-    // Add save logic here
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      setMessage('');
+      
+      const response = await profileService.updateProfile({
+        height: formData.height ? Number(formData.height) : undefined,
+        weight: formData.weight ? Number(formData.weight) : undefined,
+        gender: formData.gender,
+        dateOfBirth: formData.dateOfBirth,
+        fitnessGoal: formData.fitnessGoal,
+      });
+
+      if (response.success) {
+        setMessage('Profile updated successfully!');
+        setTimeout(() => setMessage(''), 3000);
+      }
+    } catch (error) {
+      setMessage('Failed to update profile. Please try again.');
+      console.error('Failed to update profile:', error);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -54,69 +120,79 @@ export default function Profile() {
         <Sidebar primaryLinks={sidebarPrimaryLinks} secondaryLinks={sidebarSecondaryLinks} />
 
         <div className="flex min-w-0 flex-col">
-          <Navbar navLinks={navLinks} userInitials="AJ" searchPlaceholder="Search settings..." />
+          <Navbar navLinks={navLinks} userInitials={userInitials} searchPlaceholder="Search settings..." />
 
           <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
             <div className="mx-auto w-full max-w-7xl space-y-6">
               
+              {message && (
+                <div className={`rounded-xl p-4 ${message.includes('success') ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+                  {message}
+                </div>
+              )}
+
               {/* Profile Header */}
               <div className="grid gap-5 lg:grid-cols-[1fr_380px]">
                 {/* Left: Profile Card */}
                 <section className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200/80">
-                  <div className="flex items-start gap-6">
-                    {/* Avatar */}
-                    <div className="relative shrink-0">
-                      <div className="h-28 w-28 overflow-hidden rounded-3xl bg-gradient-to-br from-slate-200 to-slate-300">
-                        <div className="grid h-full w-full place-items-center text-4xl font-bold text-slate-600">
-                          AJ
+                  {loading ? (
+                    <div className="text-center py-8">Loading...</div>
+                  ) : (
+                    <div className="flex items-start gap-6">
+                      {/* Avatar */}
+                      <div className="relative shrink-0">
+                        <div className="h-28 w-28 overflow-hidden rounded-3xl bg-gradient-to-br from-slate-200 to-slate-300">
+                          <div className="grid h-full w-full place-items-center text-4xl font-bold text-slate-600">
+                            {userInitials}
+                          </div>
                         </div>
+                        <button
+                          type="button"
+                          className="absolute bottom-0 right-0 grid h-9 w-9 place-items-center rounded-xl bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 transition-colors"
+                          aria-label="Edit avatar"
+                        >
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        className="absolute bottom-0 right-0 grid h-9 w-9 place-items-center rounded-xl bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 transition-colors"
-                        aria-label="Edit avatar"
-                      >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                      </button>
-                    </div>
 
-                    {/* Profile Info */}
-                    <div className="flex-1 min-w-0">
-                      <h1 className="text-3xl font-bold text-slate-900">Elena Rodriguez</h1>
-                      <p className="mt-1 text-sm text-slate-500">Premium Member since Oct 2023</p>
+                      {/* Profile Info */}
+                      <div className="flex-1 min-w-0">
+                        <h1 className="text-3xl font-bold text-slate-900">{formData.name || 'User'}</h1>
+                        <p className="mt-1 text-sm text-slate-500">Member since {new Date(user?.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
                       
-                      {/* Badges */}
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-700">
-                          Runner
-                        </span>
-                        <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-purple-700">
-                          Yoga
-                        </span>
-                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-700">
-                          Level 24
-                        </span>
-                      </div>
+                        {/* Badges */}
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-700">
+                            Runner
+                          </span>
+                          <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-purple-700">
+                            Yoga
+                          </span>
+                          <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-700">
+                            Level 24
+                          </span>
+                        </div>
 
-                      {/* Stats */}
-                      <div className="mt-6 grid grid-cols-3 gap-4">
-                        <div>
-                          <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Weight</p>
-                          <p className="mt-1 text-xl font-bold text-slate-900">64 kg</p>
-                        </div>
-                        <div>
-                          <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Height</p>
-                          <p className="mt-1 text-xl font-bold text-slate-900">172 cm</p>
-                        </div>
-                        <div>
-                          <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Age</p>
-                          <p className="mt-1 text-xl font-bold text-slate-900">29</p>
+                        {/* Stats */}
+                        <div className="mt-6 grid grid-cols-3 gap-4">
+                          <div>
+                            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Weight</p>
+                            <p className="mt-1 text-xl font-bold text-slate-900">{formData.weight ? `${formData.weight} kg` : 'Not set'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Height</p>
+                            <p className="mt-1 text-xl font-bold text-slate-900">{formData.height ? `${formData.height} cm` : 'Not set'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Goal</p>
+                            <p className="mt-1 text-xl font-bold text-slate-900">{formData.fitnessGoal || 'Not set'}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </section>
 
                 {/* Right: Current Goal Card */}
@@ -315,9 +391,10 @@ export default function Profile() {
                   <button
                     type="button"
                     onClick={handleSave}
-                    className="rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-100 transition hover:bg-emerald-700"
+                    disabled={saving}
+                    className="rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-100 transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Save All Changes
+                    {saving ? 'Saving...' : 'Save All Changes'}
                   </button>
                 </div>
               </div>

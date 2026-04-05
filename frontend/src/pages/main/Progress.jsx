@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import LineChart from '../../components/charts/LineChart';
@@ -39,6 +40,15 @@ const recentPRs = [
 
 export default function Progress() {
   const [timeRange, setTimeRange] = useState('6months');
+  const { user } = useAuth();
+  
+  // Get user initials for avatar
+  const userInitials = user?.name
+    ?.split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'U';
 
   return (
     <div className="min-h-screen bg-[#f5f7f8] text-slate-900">
@@ -46,7 +56,7 @@ export default function Progress() {
         <Sidebar primaryLinks={sidebarPrimaryLinks} secondaryLinks={sidebarSecondaryLinks} />
 
         <div className="flex min-w-0 flex-col">
-          <Navbar navLinks={navLinks} userInitials="AJ" searchPlaceholder="Search analytics..." />
+          <Navbar navLinks={navLinks} userInitials={userInitials} searchPlaceholder="Search analytics..." />
 
           <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
             <div className="mx-auto w-full max-w-7xl space-y-6">

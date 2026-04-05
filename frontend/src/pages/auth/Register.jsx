@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { registerRequest } from '../../services/authService';
-import useAsyncAction from '../../hooks/useAsyncAction';
+import { useAuth } from '../../context/AuthContext';
 import AuthLayout from '../../layouts/AuthLayout';
 import Button from '../../components/ui/Button';
 import FormField from '../../components/ui/FormField';
@@ -13,26 +11,42 @@ import SocialButton, { GoogleIcon, FacebookIcon } from '../../components/ui/Soci
 
 export default function Register() {
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const { run, loading, error, setError } = useAsyncAction();
+  const { register } = useAuth();
 
-  const [form, setForm]     = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [agreed, setAgreed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    if (!agreed) { setError('Please agree to the Terms of Service and Privacy Policy.'); return; }
-    run(async () => {
-      const response = await registerRequest(form);
-      const payload  = response?.data || {};
-      login({ userData: payload.user || null, accessToken: payload.access_token || '', remember: true });
-      navigate('/onboarding/1');
-    }, 'Registration failed. Please review your details.');
+    setError('');
+
+    if (!agreed) {
+      setError('Please agree to the Terms of Service and Privacy Policy.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const result = await register(form);
+      if (result.success) {
+        // Redirect to onboarding after successful registration
+        navigate('/onboarding/1');
+      } else {
+        setError(result.message || 'Registration failed. Please review your details.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

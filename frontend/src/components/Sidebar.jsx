@@ -1,11 +1,31 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Reusable sidebar with primary nav, pro upgrade card, and secondary links.
  * Pass `primaryLinks` and `secondaryLinks` arrays to customize.
- * Each link: { label, to, active?, icon: Component }
+ * Each link: { label, to, active?, icon: Component, onClick?: Function }
  */
 export default function Sidebar({ primaryLinks = [], secondaryLinks = [], showProCard = true }) {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLinkClick = async (item, e) => {
+    // Handle Sign Out specially
+    if (item.label === 'Sign Out') {
+      e.preventDefault();
+      await logout();
+      navigate('/login');
+      return;
+    }
+
+    // Handle custom onClick if provided
+    if (item.onClick) {
+      e.preventDefault();
+      item.onClick();
+    }
+  };
+
   return (
     <aside className="hidden border-r border-slate-200 bg-white px-5 py-6 lg:flex lg:flex-col sticky top-0 h-screen overflow-y-auto">
       {/* Brand */}
@@ -23,6 +43,7 @@ export default function Sidebar({ primaryLinks = [], secondaryLinks = [], showPr
             <Link
               key={item.label}
               to={item.to}
+              onClick={(e) => handleLinkClick(item, e)}
               className={`flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold transition ${
                 item.active
                   ? 'bg-emerald-50 text-emerald-700 shadow-[inset_3px_0_0_0_#10b981]'
@@ -61,6 +82,7 @@ export default function Sidebar({ primaryLinks = [], secondaryLinks = [], showPr
               <Link
                 key={item.label}
                 to={item.to}
+                onClick={(e) => handleLinkClick(item, e)}
                 className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
               >
                 {IconComponent && <IconComponent className="h-4 w-4" />}

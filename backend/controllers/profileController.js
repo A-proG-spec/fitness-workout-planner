@@ -85,6 +85,14 @@ export const updateProfile = async (req, res, next) => {
             }
         }
 
+        // Update other allowed fields
+        const allowedFields = ['gender', 'dateOfBirth', 'fitnessGoal', 'onboardingCompleted'];
+        allowedFields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                user[field] = req.body[field];
+            }
+        });
+
         await user.save();
 
         res.status(200).json({

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import BarChart from '../../components/charts/BarChart';
@@ -43,20 +44,33 @@ const recentActivity = [
 ];
 
 export default function Dashboard() {
+  const { user } = useAuth();
+  
+  // Get user's first name
+  const firstName = user?.name?.split(' ')[0] || 'there';
+  
+  // Get user initials for avatar
+  const userInitials = user?.name
+    ?.split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'U';
+
   return (
     <div className="min-h-screen bg-[#f5f7f8] text-slate-900">
       <div className="grid min-h-screen lg:grid-cols-[240px_minmax(0,1fr)]">
         <Sidebar primaryLinks={sidebarPrimaryLinks} secondaryLinks={sidebarSecondaryLinks} />
 
         <div className="flex min-w-0 flex-col">
-          <Navbar navLinks={navLinks} userInitials="AJ" searchPlaceholder="Search workouts..." />
+          <Navbar navLinks={navLinks} userInitials={userInitials} searchPlaceholder="Search workouts..." />
 
           <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
             <div className="mx-auto w-full max-w-7xl space-y-6">
               
               {/* Welcome Header */}
               <section>
-                <h1 className="text-3xl font-bold text-slate-900">Welcome back, AJ! 👋</h1>
+                <h1 className="text-3xl font-bold text-slate-900">Welcome back, {firstName}! 👋</h1>
                 <p className="mt-1 text-sm text-slate-500">
                   You've completed 12 workouts this month. Keep up the momentum!
                 </p>

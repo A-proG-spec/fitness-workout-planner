@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { getStoredAccessToken, clearAuth } from '../utils/authStorage';
 
 // Create axios instance with base configuration
 const axiosInstance = axios.create({
@@ -8,21 +7,8 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Enable sending cookies with requests
 });
-
-// Request interceptor - Add auth token to requests
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = getStoredAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 // Response interceptor - Handle errors globally
 axiosInstance.interceptors.response.use(
@@ -32,8 +18,12 @@ axiosInstance.interceptors.response.use(
   (error) => {
     // Handle 401 Unauthorized - token expired or invalid
     if (error.response?.status === 401) {
-      clearAuth();
-      window.location.href = '/login';
+      // Clear any local storage
+      localStorage.removeItem('user');
+      // Redirect to login
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
 
     // Handle network errors

@@ -1,4 +1,5 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from '../components/ProtectedRoute';
 import Landing from '../pages/main/Landing';
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
@@ -17,20 +18,84 @@ import Onboarding3 from '../pages/onboarding/Onboarding3';
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Public routes */}
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      
+      {/* Onboarding routes */}
       <Route path="/onboarding/1" element={<Onboarding1 />} />
       <Route path="/onboarding/2" element={<Onboarding2 />} />
       <Route path="/onboarding/3" element={<Onboarding3 />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/workout-planner" element={<WorkoutPlanner />} />
-      <Route path="/progress" element={<Progress />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/community" element={<Community />} />
-      <Route path="/bmi-calculator" element={<BMICalculator />} />
-      <Route path="/exercises" element={<ExerciseLibrary />} />
-      <Route path="/exercise/:id" element={<ExerciseDetail />} />
+      
+      {/* Protected routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/workout-planner"
+        element={
+          <ProtectedRoute>
+            <WorkoutPlanner />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/progress"
+        element={
+          <ProtectedRoute>
+            <Progress />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/community"
+        element={
+          <ProtectedRoute>
+            <Community />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bmi-calculator"
+        element={
+          <ProtectedRoute>
+            <BMICalculator />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/exercises"
+        element={
+          <ProtectedRoute>
+            <ExerciseLibrary />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/exercise/:id"
+        element={
+          <ProtectedRoute>
+            <ExerciseDetail />
+          </ProtectedRoute>
+        }
+      />
+      
+      {/* Catch all - redirect to landing */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
