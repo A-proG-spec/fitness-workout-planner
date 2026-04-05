@@ -98,6 +98,9 @@ export default function EquilibriumShell({ children, searchPlaceholder = 'Search
             <NavLink to="/nutrition" className={navClass} onClick={(e) => e.preventDefault()}>
               Nutrition
             </NavLink>
+            <NavLink to="/progress" className={navClass}>
+              Progress
+            </NavLink>
             <NavLink to="/community" className={navClass} onClick={(e) => e.preventDefault()}>
               Community
             </NavLink>
