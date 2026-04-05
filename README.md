@@ -1,19 +1,20 @@
-# 💪 Fitness Workout Planner
+# 🏋️ Fitness Workout Planner
 
 A full-stack web-based fitness workout planner that helps users create, customize, and track workout routines. Users can set goals, organize exercises, and monitor their progress through a clean and responsive interface.
 
 ---
 
-## ✨ Features
+## 🚀 Features
 
-* 🔐 JWT-based Authentication
-* 👤 User Profile Management
-* 🧮 BMI Calculation
-* 💪 Exercise Library with Filters
-* 📅 Workout Planning & Scheduling
-* ✅ Progress Tracking
-* 📊 Statistics & Trends
-* 📱 Fully Responsive Design
+* JWT-based Authentication
+* User Profile Management
+* BMI Calculation
+* Exercise Library with Filters
+* Workout Planning and Scheduling
+* Progress Tracking
+* Statistics and Trends
+* Admin Dashboard and Management
+* Fully Responsive Design
 
 ---
 
@@ -36,7 +37,7 @@ A full-stack web-based fitness workout planner that helps users create, customiz
 
 ---
 
-## 📡 API Overview
+## 🌐 API Overview
 
 **Base URL**
 
@@ -76,7 +77,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 💪 Exercise Routes
+## 🏋️ Exercise Routes
 
 **Base Path:** `/api/exercises`
 
@@ -109,7 +110,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 📊 Progress Routes
+## 📈 Progress Routes
 
 **Base Path:** `/api/progress`
 
@@ -121,26 +122,93 @@ Authorization: Bearer <token>
 
 ---
 
-## 🏥 Health Check
+## 🛡 Admin Routes
+
+**Base Path:** `/api/admin`
+
+> ⚠️ All admin routes require authentication with an **admin role**.
+
+### 📊 Dashboard
+
+| Method | Endpoint | Description             |
+| ------ | -------- | ----------------------- |
+| GET    | /stats   | Get platform statistics |
+
+### 👥 User Management
+
+| Method | Endpoint              | Description      |
+| ------ | --------------------- | ---------------- |
+| GET    | /users                | Get all users    |
+| GET    | /users/:id            | Get single user  |
+| PUT    | /users/:id/role       | Update user role |
+| PUT    | /users/:id/deactivate | Deactivate user  |
+| PUT    | /users/:id/activate   | Activate user    |
+| DELETE | /users/:id            | Delete user      |
+
+### 🏋️ Exercise Management (Admin)
+
+| Method | Endpoint                     | Description          |
+| ------ | ---------------------------- | -------------------- |
+| GET    | /exercises                   | Get all exercises    |
+| POST   | /exercises                   | Create exercise      |
+| PUT    | /exercises/:id               | Update exercise      |
+| DELETE | /exercises/:id               | Delete exercise      |
+| PUT    | /exercises/:id/toggle-status | Toggle active status |
+
+---
+
+## ❤️ Health Check
 
 ```
-GET /health
+GET /api/health
 ```
 
 ---
 
-## 🚀 Setup & Installation
+## 📊 Admin Dashboard Response Example
+
+```json
+{
+  "success": true,
+  "data": {
+    "users": {
+      "total": 245,
+      "active": 210,
+      "inactive": 35
+    },
+    "exercises": {
+      "total": 156,
+      "active": 142,
+      "inactive": 14
+    },
+    "plans": {
+      "total": 5678,
+      "completed": 4145,
+      "completionRate": 73
+    },
+    "progress": {
+      "totalEntries": 1234
+    },
+    "recentUsers": [],
+    "recentPlans": []
+  }
+}
+```
+
+---
+
+## ⚙️ Setup & Installation
 
 ### 1. Clone the repository
 
-```
+```bash
 git clone https://github.com/your-username/fitness-workout-planner.git
 cd fitness-workout-planner
 ```
 
 ### 2. Install dependencies
 
-```
+```bash
 npm install
 ```
 
@@ -148,87 +216,122 @@ npm install
 
 Create a `.env` file in the root directory:
 
-```
+```env
 PORT=5000
-DB_URI=mongodb://localhost:27017/fitness
-JWT_SECRET=your_secret_key
+NODE_ENV=development
+DB_URI=mongodb://localhost:27017/fitness_workout_planner
+JWT_SECRET=your_super_secret_key_min_32_characters
+JWT_EXPIRE=7d
 ```
 
-### 4. Run the application
+### 4. Create Admin User (Optional)
+
+```bash
+node scripts/createAdmin.js
+```
+
+**Default Credentials:**
+
+* Email: [admin@fitness.com](mailto:admin@fitness.com)
+* Password: Admin@123456
+
+### 5. Run the application
 
 **Development**
 
-```
+```bash
 npm run dev
 ```
 
 **Production**
 
-```
+```bash
 npm start
 ```
 
 ---
 
-## 🧪 Test Flow
+## 🔄 Flows
 
-1. Register a new user
-2. Login to receive JWT token
-3. Use token to access protected routes
+### Regular User Flow
+
+1. Register
+2. Login → Receive JWT
+3. Browse exercises
 4. Create workout plans
-5. Log progress
-6. View statistics
+5. Complete workouts
+6. Log progress
+7. View stats
+
+### Admin Flow
+
+1. Login as admin
+2. Access dashboard
+3. Manage users
+4. Manage exercises
+5. Monitor platform
 
 ---
 
-## 📁 Project Structure
+## 🗂 Project Structure
 
 ```
 backend/
- ├── models/
- ├── controllers/
- ├── routes/
- ├── middleware/
- ├── config/
- ├── utils/
- ├── app.js
- └── server.js
+├── config/
+├── models/
+├── controllers/
+├── routes/
+├── middleware/
+├── utils/
+├── scripts/
+├── app.js
+└── server.js
 ```
 
 ---
 
 ## 📌 Status Codes
 
-* 200 OK
-* 201 Created
-* 400 Bad Request
-* 401 Unauthorized
-* 404 Not Found
-* 500 Internal Server Error
+| Code | Meaning      |
+| ---- | ------------ |
+| 200  | Success      |
+| 201  | Created      |
+| 400  | Bad Request  |
+| 401  | Unauthorized |
+| 403  | Forbidden    |
+| 404  | Not Found    |
+| 409  | Conflict     |
+| 500  | Server Error |
 
 ---
 
-## 🔒 Authentication Flow
+## 🔐 Security
 
-Register → Login → Receive JWT → Access Protected Routes
+* Password hashing (bcrypt)
+* JWT authentication
+* Role-based access control
+* Input validation
+* Protected routes
+* Environment variables
 
 ---
 
-## 📈 Progress Flow
+## 👥 Roles
 
-Create Plan → Complete Workout → Log Progress → View Stats
+| Role  | Permissions |
+| ----- | ----------- |
+| User  | Basic usage |
+| Admin | Full access |
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome!
-
-1. Fork the repository
-2. Create a new branch (`feature/your-feature`)
-3. Commit your changes
-4. Push to your branch
-5. Open a Pull Request
+1. Fork repo
+2. Create branch (`feature/your-feature`)
+3. Commit changes
+4. Push
+5. Open PR
 
 ---
 
@@ -238,13 +341,22 @@ ISC License
 
 ---
 
-## 🚀 Quick Commands
+## ⚡ Quick Commands
 
-```
+```bash
+npm install
 npm run dev
 npm start
+npm run seed
+node scripts/createAdmin.js
 ```
 
 ---
 
-**Status:** 🚀 Active Development
+## 📊 API Summary
+
+| Category       | Endpoints |
+| -------------- | --------- |
+| Authentication | 5         |
+| Profile        | 3         |
+| Exerc          |           |
