@@ -24,8 +24,9 @@ export default function Login() {
     e.preventDefault();
     run(async () => {
       const response = await loginRequest({ email, password });
-      const payload  = response?.data || {};
-      login({ userData: payload.user || null, accessToken: payload.access_token || '', remember });
+      const payload = response?.data || {};
+      const accessToken = payload.access_token || payload.token || '';
+      login({ userData: payload.user || null, accessToken, remember });
       navigate('/dashboard');
     }, 'Login failed. Please check your credentials.');
   };

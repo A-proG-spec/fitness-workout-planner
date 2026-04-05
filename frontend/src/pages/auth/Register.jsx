@@ -86,9 +86,10 @@ export default function Register() {
     run(async () => {
       const response = await registerRequest(form);
       const payload = response?.data || {};
+      const accessToken = payload.access_token || payload.token || '';
       login({
         userData: payload.user || null,
-        accessToken: payload.access_token || '',
+        accessToken,
         remember: true,
       });
       navigate('/onboarding/1');
