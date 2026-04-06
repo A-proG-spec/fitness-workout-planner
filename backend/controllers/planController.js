@@ -176,6 +176,32 @@ export const completeWorkout = async (req, res, next) => {
         next(err);
     }
 };
+export const getCompletionStats = async (req, res, next) => {
+  try {
+    const totalPlans = await Plan.countDocuments({
+      user: req.user._id,
+    });
+
+    const completedPlans = await Plan.countDocuments({
+      user: req.user._id,
+      completed: true,
+    });
+
+    const completionRate =
+      totalPlans > 0 ? Math.round((completedPlans / totalPlans) * 100) : 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalPlans,
+        completedPlans,
+        completionRate,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 
 export const updatePlan = async (req, res, next) => {
