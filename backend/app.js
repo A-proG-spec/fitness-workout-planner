@@ -28,7 +28,7 @@ app.use(cookieParser());
 
 // CORS middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173'], // React dev servers
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'], // React dev servers
     credentials: true,  // Allow cookies to be sent
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']

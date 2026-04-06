@@ -51,6 +51,10 @@ const UserSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    onboardingCompleted: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

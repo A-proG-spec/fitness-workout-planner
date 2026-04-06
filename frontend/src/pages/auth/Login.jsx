@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { loginRequest } from '../../services/authService';
-import useAsyncAction from '../../hooks/useAsyncAction';
+import { useAuth } from '../../context/AuthContext';
 import AuthLayout from '../../layouts/AuthLayout';
 import Button from '../../components/ui/Button';
 import FormField from '../../components/ui/FormField';
@@ -14,20 +12,29 @@ import SocialButton, { GoogleIcon, AppleIcon } from '../../components/ui/SocialB
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { run, loading, error } = useAsyncAction();
 
-  const [email, setEmail]       = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [remember, setRemember] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    run(async () => {
-      const response = await loginRequest({ email, password });
-      const payload  = response?.data || {};
-      login({ userData: payload.user || null, accessToken: payload.access_token || '', remember });
-      navigate('/dashboard');
-    }, 'Login failed. Please check your credentials.');
+    setError('');
+    setLoading(true);
+
+    try {
+      const result = await login({ email, password });
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.message || 'Login failed. Please check your credentials.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,7 +45,7 @@ export default function Login() {
           <p className="mt-0.5 text-xs text-gray-500">Continue your journey to intentional wellness.</p>
         </div>
 
-        <Alert>{error}</Alert>
+        {error && <Alert>{error}</Alert>}
 
         <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
           <FormField

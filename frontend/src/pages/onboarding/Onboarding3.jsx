@@ -1,27 +1,68 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
+import { profileService } from '../../services/profileService';
+import { authService } from '../../services/authService';
 import Button from '../../components/ui/Button';
 import { calcBmi, calcBmr, onboardingStorage } from '../../utils/fitness';
 
 const GOAL_META = {
-  lose:     { label: 'Lose Weight',  kcal: 1900, emoji: '🔥', tip: 'Calorie deficit with cardio focus' },
-  gain:     { label: 'Gain Muscle',  kcal: 2800, emoji: '💪', tip: 'Calorie surplus with strength training' },
-  maintain: { label: 'Stay Fit',     kcal: 2300, emoji: '⚖️', tip: 'Balanced diet with mixed training' },
+  lose:     { label: 'Lose Weight',  kcal: 1900, emoji: '🔥', tip: 'Calorie deficit with cardio focus', goal: 'Weight Loss' },
+  gain:     { label: 'Gain Muscle',  kcal: 2800, emoji: '💪', tip: 'Calorie surplus with strength training', goal: 'Muscle Gain' },
+  maintain: { label: 'Stay Fit',     kcal: 2300, emoji: '⚖️', tip: 'Balanced diet with mixed training', goal: 'General Fitness' },
 };
 
 export default function Onboarding3() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
+  const [saving, setSaving] = useState(false);
 
   const firstName = user?.name?.split(' ')[0] || 'there';
-  const { age, height, weight, goal: goalKey } = onboardingStorage.load();
+  const { age, height, weight, goal: goalKey, gender } = onboardingStorage.load();
   const meta = GOAL_META[goalKey] ?? GOAL_META.maintain;
 
   const bmi = calcBmi(weight, height) ?? '—';
   const bmr = calcBmr(weight, height, age);
 
-  useEffect(() => { onboardingStorage.markComplete(); }, []);
+  useEffect(() => { 
+    onboardingStorage.markComplete(); 
+    // Save profile data to backend
+    saveProfileData();
+  }, []);
+
+  const saveProfileData = async () => {
+    try {
+      setSaving(true);
+      
+      // Calculate date of birth from age
+      const currentYear = new Date().getFullYear();
+      const birthYear = currentYear - age;
+      const dateOfBirth = new Date(birthYear, 0, 1).toISOString();
+
+      await profileService.updateProfile({
+        height,
+        weight,
+        gender,
+        dateOfBirth,
+        fitnessGoal: meta.goal,
+        onboardingCompleted: true,
+      });
+
+      // Refresh user data to get updated onboardingCompleted status
+      await refreshUser();
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleGoToDashboard = () => {
+    // Clear onboarding storage
+    onboardingStorage.clear();
+    // Navigate to dashboard
+    navigate('/dashboard');
+  };
 
   const stats = [
     { label: 'Daily Calories', value: `${meta.kcal.toLocaleString()} kcal`, sub: meta.tip },
@@ -95,8 +136,8 @@ export default function Onboarding3() {
           </div>
 
           <div className="flex flex-col items-center gap-3">
-            <Button size="lg" onClick={() => navigate('/dashboard')}>
-              Go to Dashboard
+            <Button size="lg" onClick={handleGoToDashboard} disabled={saving}>
+              {saving ? 'Saving...' : 'Go to Dashboard'}
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
