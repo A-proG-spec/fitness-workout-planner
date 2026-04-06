@@ -1,0 +1,993 @@
+# Step-by-Step Guide to Test API Endpoints Using Thunder Client
+
+## Prerequisites
+
+1. **VS Code** installed
+2. **Thunder Client** extension installed (search in VS Code extensions)
+3. **Backend server** running on `http://localhost:5000`
+4. **MongoDB** connected and running
+
+---
+
+## Step 1: Open Thunder Client in VS Code
+
+1. Open VS Code
+2. Click on the **Thunder Client** icon in the left sidebar (lightning bolt icon)
+3. Alternatively, press `Ctrl + Shift + P` and search for "Thunder Client: New Request"
+
+---
+
+## Step 2: Create Environment Variables
+
+Environments help you store reusable variables like base URL and tokens.
+
+### 2.1 Open Environment Manager
+1. Click on the **Environment** dropdown at the top of Thunder Client
+2. Select **Manage Environments**
+3. Click **New Environment**
+
+### 2.2 Create Development Environment
+Name: `Fitness Planner Dev`
+
+Add these variables:
+
+| Variable Name | Initial Value | Current Value |
+|--------------|---------------|----------------|
+| base_url | http://localhost:5000 | http://localhost:5000 |
+| access_token | (leave empty) | (will be filled after login) |
+| user_id | (leave empty) | (will be filled after register) |
+| plan_id | (leave empty) | (will be filled after creating plan) |
+| exercise_id | (leave empty) | (will be filled from exercise list) |
+
+### 2.3 Save Environment
+Click **Save** then close the Environment Manager
+
+### 2.4 Select Environment
+From the Environment dropdown, select **Fitness Planner Dev**
+
+---
+
+## Step 3: Test Health Check (Warm-up)
+
+### 3.1 Create New Request
+Click **New Request** button
+
+### 3.2 Configure Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/health` |
+
+### 3.3 Send Request
+Click **Send** button
+
+### 3.4 Expected Response
+```json
+{
+  "success": true,
+  "message": "Server is running",
+  "timestamp": "2024-...",
+  "environment": "development"
+}
+```
+
+**Status Code:** 200 OK
+
+---
+
+## Step 4: Test User Registration
+
+### 4.1 Create New Request
+Click **New Request**
+
+### 4.2 Configure Request
+
+| Field | Value |
+|-------|-------|
+| Method | POST |
+| URL | `{{base_url}}/api/auth/register` |
+
+### 4.3 Set Headers
+Click on **Headers** tab and add:
+
+| Header | Value |
+|--------|-------|
+| Content-Type | application/json |
+
+### 4.4 Set Request Body
+Click on **Body** tab, select **JSON** format, and paste:
+
+```json
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "123456",
+  "gender": "Male",
+  "height": 175,
+  "weight": 70,
+  "fitnessGoal": "Muscle Gain"
+}
+```
+
+### 4.5 Send Request
+Click **Send** button
+
+### 4.6 Expected Response
+```json
+{
+  "success": true,
+  "message": "User registered successfully",
+  "data": {
+    "user": {
+      "_id": "65f123456789",
+      "name": "Test User",
+      "email": "test@example.com"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIs..."
+  }
+}
+```
+
+### 4.7 Save User ID
+Copy the `_id` value from response and add to environment:
+1. Click on **Environment** dropdown
+2. Select **Manage Environments**
+3. Edit **Fitness Planner Dev**
+4. Set `user_id` = the copied ID
+5. Click **Save**
+
+---
+
+## Step 5: Test User Login
+
+### 5.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | POST |
+| URL | `{{base_url}}/api/auth/login` |
+
+### 5.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Content-Type | application/json |
+
+### 5.3 Set Request Body
+
+```json
+{
+  "email": "test@example.com",
+  "password": "123456"
+}
+```
+
+### 5.4 Send Request
+
+### 5.5 Expected Response
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "_id": "65f123456789",
+      "name": "Test User",
+      "email": "test@example.com"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIs..."
+  }
+}
+```
+
+### 5.6 Save Access Token
+Copy the `token` value and add to environment:
+1. Open Environment Manager
+2. Set `access_token` = the copied token
+3. Click **Save**
+
+---
+
+## Step 6: Test Get Current User (Protected Route)
+
+### 6.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/auth/me` |
+
+### 6.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+| Content-Type | application/json |
+
+### 6.3 Send Request
+
+### 6.4 Expected Response
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "_id": "65f123456789",
+      "name": "Test User",
+      "email": "test@example.com"
+    }
+  }
+}
+```
+
+---
+
+## Step 7: Test Get Profile
+
+### 7.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/profile` |
+
+### 7.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+
+### 7.3 Send Request
+
+### 7.4 Expected Response
+```json
+{
+  "success": true,
+  "data": {
+    "profile": {
+      "id": "65f123456789",
+      "name": "Test User",
+      "email": "test@example.com",
+      "height": 175,
+      "weight": 70,
+      "bmi": {
+        "bmi": 22.9,
+        "category": "Normal"
+      }
+    }
+  }
+}
+```
+
+---
+
+## Step 8: Test Update Profile
+
+### 8.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | PUT |
+| URL | `{{base_url}}/api/profile` |
+
+### 8.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+| Content-Type | application/json |
+
+### 8.3 Set Request Body
+
+```json
+{
+  "name": "Updated User",
+  "height": 180,
+  "weight": 75,
+  "fitnessGoal": "Weight Loss"
+}
+```
+
+### 8.4 Send Request
+
+### 8.5 Expected Response
+```json
+{
+  "success": true,
+  "message": "Profile updated successfully",
+  "data": {
+    "profile": {
+      "name": "Updated User",
+      "height": 180,
+      "weight": 75
+    }
+  }
+}
+```
+
+---
+
+## Step 9: Test Calculate BMI
+
+### 9.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | POST |
+| URL | `{{base_url}}/api/profile/bmi` |
+
+### 9.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+| Content-Type | application/json |
+
+### 9.3 Set Request Body
+
+```json
+{
+  "height": 175,
+  "weight": 70
+}
+```
+
+### 9.4 Send Request
+
+### 9.5 Expected Response
+```json
+{
+  "success": true,
+  "data": {
+    "bmi": 22.9,
+    "category": "Normal"
+  }
+}
+```
+
+---
+
+## Step 10: Test Get All Exercises
+
+### 10.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/exercises` |
+
+### 10.2 Send Request
+
+### 10.3 Expected Response
+```json
+{
+  "success": true,
+  "total": 4,
+  "page": 1,
+  "totalPages": 1,
+  "count": 4,
+  "exercises": [
+    {
+      "_id": "65f789...",
+      "name": "Push Up",
+      "muscleGroup": "chest",
+      "difficulty": "beginner"
+    }
+  ]
+}
+```
+
+### 10.4 Save Exercise ID
+Copy the first exercise `_id` and add to environment as `exercise_id`
+
+---
+
+## Step 11: Test Get Exercises with Filters
+
+### 11.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/exercises?muscleGroup=chest&difficulty=beginner` |
+
+### 11.2 Send Request
+
+### 11.3 Expected Response
+Filtered list of chest exercises with beginner difficulty
+
+---
+
+## Step 12: Test Get Filter Options
+
+### 12.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/exercises/filter-options` |
+
+### 12.2 Send Request
+
+### 12.3 Expected Response
+```json
+{
+  "success": true,
+  "filterOptions": {
+    "muscleGroups": ["chest", "back", "legs"],
+    "difficulties": ["beginner", "intermediate", "advanced"],
+    "equipment": ["none", "dumbbells", "barbell"]
+  }
+}
+```
+
+---
+
+## Step 13: Test Get Single Exercise
+
+### 13.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/exercises/{{exercise_id}}` |
+
+### 13.2 Send Request
+
+### 13.3 Expected Response
+Complete exercise details
+
+---
+
+## Step 14: Test Create Workout Plan
+
+### 14.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | POST |
+| URL | `{{base_url}}/api/plans` |
+
+### 14.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+| Content-Type | application/json |
+
+### 14.3 Set Request Body
+
+```json
+{
+  "workoutId": "{{exercise_id}}",
+  "scheduledDate": "2024-04-20",
+  "notes": "Morning workout"
+}
+```
+
+### 14.4 Send Request
+
+### 14.5 Expected Response
+```json
+{
+  "success": true,
+  "data": {
+    "plan": {
+      "_id": "65f456...",
+      "scheduledDate": "2024-04-20T00:00:00.000Z",
+      "completed": false
+    }
+  }
+}
+```
+
+### 14.6 Save Plan ID
+Copy the `plan._id` and add to environment as `plan_id`
+
+---
+
+## Step 15: Test Get All Plans
+
+### 15.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/plans` |
+
+### 15.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+
+### 15.3 Send Request
+
+### 15.4 Expected Response
+List of all user's workout plans
+
+---
+
+## Step 16: Test Get Daily Plans
+
+### 16.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/plans/daily?date=2024-04-20` |
+
+### 16.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+
+### 16.3 Send Request
+
+### 16.4 Expected Response
+Plans scheduled for April 20, 2024
+
+---
+
+## Step 17: Test Get Weekly Plans
+
+### 17.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/plans/weekly?startDate=2024-04-20` |
+
+### 17.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+
+### 17.3 Send Request
+
+### 17.4 Expected Response
+Plans grouped by date for the week
+
+---
+
+## Step 18: Test Update Plan
+
+### 18.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | PUT |
+| URL | `{{base_url}}/api/plans/{{plan_id}}` |
+
+### 18.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+| Content-Type | application/json |
+
+### 18.3 Set Request Body
+
+```json
+{
+  "scheduledDate": "2024-04-21",
+  "notes": "Rescheduled to evening"
+}
+```
+
+### 18.4 Send Request
+
+### 18.5 Expected Response
+```json
+{
+  "success": true,
+  "message": "Plan updated successfully",
+  "data": {
+    "plan": {
+      "scheduledDate": "2024-04-21T00:00:00.000Z"
+    }
+  }
+}
+```
+
+---
+
+## Step 19: Test Complete Workout
+
+### 19.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | PUT |
+| URL | `{{base_url}}/api/plans/{{plan_id}}/complete` |
+
+### 19.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+
+### 19.3 Send Request
+
+### 19.4 Expected Response
+```json
+{
+  "success": true,
+  "message": "Workout marked as completed",
+  "data": {
+    "plan": {
+      "completed": true,
+      "completedAt": "2024-04-20T10:30:00.000Z"
+    }
+  }
+}
+```
+
+---
+
+## Step 20: Test Add Progress Entry
+
+### 20.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | POST |
+| URL | `{{base_url}}/api/progress` |
+
+### 20.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+| Content-Type | application/json |
+
+### 20.3 Set Request Body
+
+```json
+{
+  "date": "2024-04-20",
+  "weight": 72.5,
+  "caloriesBurned": 450,
+  "notes": "Great workout!",
+  "measurements": {
+    "chest": 95,
+    "waist": 80,
+    "arms": 35
+  }
+}
+```
+
+### 20.4 Send Request
+
+### 20.5 Expected Response
+```json
+{
+  "success": true,
+  "data": {
+    "progress": {
+      "weight": 72.5,
+      "caloriesBurned": 450,
+      "workoutsCompleted": 1
+    }
+  }
+}
+```
+
+---
+
+## Step 21: Test Get Progress Entries
+
+### 21.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/progress` |
+
+### 21.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+
+### 21.3 Send Request
+
+### 21.4 Expected Response
+List of all progress entries
+
+---
+
+## Step 22: Test Get Progress Statistics
+
+### 22.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/progress/stats?days=30` |
+
+### 22.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+
+### 22.3 Send Request
+
+### 22.4 Expected Response
+```json
+{
+  "success": true,
+  "data": {
+    "period": "30 days",
+    "totalCompletedWorkouts": 5,
+    "totalScheduledWorkouts": 7,
+    "completionRate": "71%",
+    "weightTrend": [],
+    "caloriesTrend": []
+  }
+}
+```
+
+---
+
+## Step 23: Test Logout
+
+### 23.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | POST |
+| URL | `{{base_url}}/api/auth/logout` |
+
+### 23.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+
+### 23.3 Send Request
+
+### 23.4 Expected Response
+```json
+{
+  "success": true,
+  "message": "Logout successful"
+}
+```
+
+---
+
+## Step 24: Test Delete Plan (Cleanup)
+
+### 24.1 Create New Request
+
+| Field | Value |
+|-------|-------|
+| Method | DELETE |
+| URL | `{{base_url}}/api/plans/{{plan_id}}` |
+
+### 24.2 Set Headers
+
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer {{access_token}} |
+
+### 24.3 Send Request
+
+### 24.4 Expected Response
+```json
+{
+  "success": true,
+  "message": "Plan deleted successfully"
+}
+```
+
+---
+
+## Admin Endpoints Testing
+
+### Step 25: Login as Admin
+
+First, create an admin user using script or database.
+
+### 25.1 Create Admin Login Request
+
+| Field | Value |
+|-------|-------|
+| Method | POST |
+| URL | `{{base_url}}/api/auth/login` |
+
+### 25.2 Request Body
+```json
+{
+  "email": "admin@fitness.com",
+  "password": "Admin@123456"
+}
+```
+
+### 25.3 Save New Admin Token
+Update `access_token` with admin token
+
+---
+
+### Step 26: Test Get Dashboard Stats
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/admin/stats` |
+| Header | Authorization: Bearer {{access_token}} |
+
+---
+
+### Step 27: Test Get All Users
+
+| Field | Value |
+|-------|-------|
+| Method | GET |
+| URL | `{{base_url}}/api/admin/users` |
+| Header | Authorization: Bearer {{access_token}} |
+
+**With filters:**
+```
+{{base_url}}/api/admin/users?page=1&limit=10&role=user
+```
+
+---
+
+### Step 28: Test Update User Role
+
+| Field | Value |
+|-------|-------|
+| Method | PUT |
+| URL | `{{base_url}}/api/admin/users/{{user_id}}/role` |
+| Header | Authorization: Bearer {{access_token}} |
+| Body | `{"role": "admin"}` |
+
+---
+
+### Step 29: Test Create Exercise (Admin)
+
+| Field | Value |
+|-------|-------|
+| Method | POST |
+| URL | `{{base_url}}/api/admin/exercises` |
+| Header | Authorization: Bearer {{access_token}} |
+
+**Request Body:**
+```json
+{
+  "name": "Deadlift",
+  "description": "Full body compound exercise",
+  "muscleGroup": "back",
+  "difficulty": "advanced",
+  "equipment": "barbell",
+  "instructions": ["Stand over bar", "Grip bar", "Lift with legs", "Stand straight"],
+  "defaultSets": 3,
+  "defaultReps": 5
+}
+```
+
+---
+
+### Step 30: Test Update Exercise (Admin)
+
+| Field | Value |
+|-------|-------|
+| Method | PUT |
+| URL | `{{base_url}}/api/admin/exercises/{{exercise_id}}` |
+| Header | Authorization: Bearer {{access_token}} |
+
+**Request Body:**
+```json
+{
+  "difficulty": "intermediate",
+  "defaultReps": 8
+}
+```
+
+---
+
+### Step 31: Test Toggle Exercise Status
+
+| Field | Value |
+|-------|-------|
+| Method | PUT |
+| URL | `{{base_url}}/api/admin/exercises/{{exercise_id}}/toggle-status` |
+| Header | Authorization: Bearer {{access_token}} |
+
+---
+
+### Step 32: Test Delete Exercise (Admin)
+
+| Field | Value |
+|-------|-------|
+| Method | DELETE |
+| URL | `{{base_url}}/api/admin/exercises/{{exercise_id}}` |
+| Header | Authorization: Bearer {{access_token}} |
+
+---
+
+## Quick Test Collection (Save as Collection)
+
+You can save all these requests as a Collection in Thunder Client for future use:
+
+1. Click **Collections** tab in Thunder Client
+2. Click **New Collection** and name it `Fitness Planner API`
+3. Add each request as a folder
+4. Export collection for sharing
+
+---
+
+## Thunder Client Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| Ctrl + Enter | Send Request |
+| Ctrl + Shift + E | Environment Manager |
+| Ctrl + Shift + C | Collections |
+| Ctrl + Shift + H | History |
+
+---
+
+## Common Issues and Solutions
+
+### Issue 1: Connection Refused
+**Solution:** Make sure server is running with `npm run dev`
+
+### Issue 2: 401 Unauthorized
+**Solution:** Update `access_token` after login
+
+### Issue 3: 404 Not Found
+**Solution:** Check URL and make sure `{{base_url}}` is correct
+
+### Issue 4: Variable Not Replaced
+**Solution:** Make sure environment is selected from dropdown
+
+### Issue 5: Invalid Token
+**Solution:** Login again to get fresh token
+
+---
+
+## Testing Checklist
+
+| Test | Endpoint | Status |
+|------|----------|--------|
+| 1 | GET /api/health | Pass/Fail |
+| 2 | POST /api/auth/register | Pass/Fail |
+| 3 | POST /api/auth/login | Pass/Fail |
+| 4 | GET /api/auth/me | Pass/Fail |
+| 5 | GET /api/profile | Pass/Fail |
+| 6 | PUT /api/profile | Pass/Fail |
+| 7 | POST /api/profile/bmi | Pass/Fail |
+| 8 | GET /api/exercises | Pass/Fail |
+| 9 | GET /api/exercises/filter-options | Pass/Fail |
+| 10 | GET /api/exercises/:id | Pass/Fail |
+| 11 | POST /api/plans | Pass/Fail |
+| 12 | GET /api/plans | Pass/Fail |
+| 13 | GET /api/plans/daily | Pass/Fail |
+| 14 | GET /api/plans/weekly | Pass/Fail |
+| 15 | PUT /api/plans/:id | Pass/Fail |
+| 16 | PUT /api/plans/:id/complete | Pass/Fail |
+| 17 | POST /api/progress | Pass/Fail |
+| 18 | GET /api/progress | Pass/Fail |
+| 19 | GET /api/progress/stats | Pass/Fail |
+| 20 | POST /api/auth/logout | Pass/Fail |
+| 21 | DELETE /api/plans/:id | Pass/Fail |
+
+---
+
+## Success Indicators
+
+- Green checkmark means request was successful
+- Status code 200, 201 indicates success
+- Response contains `"success": true`
+- Environment variables update automatically
+
+---
+
+Your API testing is now complete. All endpoints should work as expected.
