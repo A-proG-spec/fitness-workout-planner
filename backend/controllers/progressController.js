@@ -1,4 +1,4 @@
-import Progress from "../models/progress.js";
+import Progress from '../models/Progress.js';
 import Plan from "../models/Plan.js";
 
 // Add progress

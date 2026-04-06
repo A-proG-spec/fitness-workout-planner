@@ -35,7 +35,9 @@ app.use(cors({
 }));
 
 // ========== API ROUTES ==========
-
+app.get('/', (req, res) => {
+  res.send("fitness workout planner is running");
+});
 // Health check route
 app.get('/api/health', (req, res) => {
     res.status(200).json({

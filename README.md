@@ -4,7 +4,7 @@ A full-stack web-based fitness workout planner that helps users create, customiz
 
 ---
 
-## ✨ Features
+## 🚀 Features
 
 * 🔐 JWT-based Authentication with Cookies
 * 👤 User Profile Management
@@ -147,7 +147,7 @@ http://localhost:5000/api
 
 ---
 
-## 💪 Exercise Routes
+## 🏋️ Exercise Routes
 
 **Base Path:** `/api/exercises`
 
@@ -210,6 +210,43 @@ Create your own account through registration!
 
 ## 📁 Project Structure
 
+**Base Path:** `/api/admin`
+
+> ⚠️ All admin routes require authentication with an **admin role**.
+
+### 📊 Dashboard
+
+| Method | Endpoint | Description             |
+| ------ | -------- | ----------------------- |
+| GET    | /stats   | Get platform statistics |
+
+### 👥 User Management
+
+| Method | Endpoint              | Description      |
+| ------ | --------------------- | ---------------- |
+| GET    | /users                | Get all users    |
+| GET    | /users/:id            | Get single user  |
+| PUT    | /users/:id/role       | Update user role |
+| PUT    | /users/:id/deactivate | Deactivate user  |
+| PUT    | /users/:id/activate   | Activate user    |
+| DELETE | /users/:id            | Delete user      |
+
+### 🏋️ Exercise Management (Admin)
+
+| Method | Endpoint                     | Description          |
+| ------ | ---------------------------- | -------------------- |
+| GET    | /exercises                   | Get all exercises    |
+| POST   | /exercises                   | Create exercise      |
+| PUT    | /exercises/:id               | Update exercise      |
+| DELETE | /exercises/:id               | Delete exercise      |
+| PUT    | /exercises/:id/toggle-status | Toggle active status |
+
+---
+
+## ❤️ Health Check
+
+```
+GET /api/health
 ```
 fitness-workout-planner/
 ├── backend/
@@ -410,10 +447,22 @@ For issues and questions:
 
 ---
 
-**Status:** ✅ Production Ready
+## ⚡ Quick Commands
 
-**Live Demo:** [Coming Soon]
+```bash
+npm install
+npm run dev
+npm start
+npm run seed
+node scripts/createAdmin.js
+```
 
 ---
 
-Made with ❤️ and 💪 by Abdulaziz
+## 📊 API Summary
+
+| Category       | Endpoints |
+| -------------- | --------- |
+| Authentication | 5         |
+| Profile        | 3         |
+| Exerc          |           |
