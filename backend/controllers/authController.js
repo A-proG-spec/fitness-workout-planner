@@ -43,7 +43,7 @@ export const register = async (req, res, next) => {
             throw error;
         }
 
-        // ✅ Hash password here instead of in model
+        // Hash password here instead of in model
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -92,7 +92,7 @@ export const login = async (req, res, next) => {
             throw error;
         }
 
-        // ✅ Compare passwords
+        // Compare passwords
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         
         if (!isPasswordMatch) {

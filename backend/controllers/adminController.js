@@ -1,7 +1,7 @@
 import User from '../models/User.js';
 import Exercise from '../models/Exercise.js';
 import Plan from '../models/Plan.js';
-import Progress from '../models/Progress.js';
+// import Progress from '../models/Progress.js';
 
 // ==================== USER MANAGEMENT ====================
 
